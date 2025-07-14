@@ -4,7 +4,7 @@ A simple decentralized exchange (DEX) implemented in Solidity that allows the ex
 
 ## 🚀 Live Demo
 
-**Try the application live:** [https://simple-swap-d-app.vercel.app/](https://simple-swap-d-app.vercel.app/)
+**Try the application live:** [https://simpleswap-dex-dapp.vercel.app/](https://simpleswap-dex-dapp.vercel.app/)
 
 Experience the full functionality of SimpleSwap DEX including:
 
@@ -115,6 +115,7 @@ getAmountOut(amountIn, reserveIn, reserveOut);
 
 ### Test
 
+```bash
 SimpleSwap Tests
 ✔ testing getAmountOut with zero amountIn (260ms)
 ✔ testing getAmountOut with zero reserves (45ms)
@@ -167,9 +168,11 @@ SimpleSwap Tests
 - ◯ Execution gas for this method does not include intrinsic gas overhead
 - △ Cost was non-zero but below the precision setting for the currency display
 - **Toolchain**: hardhat
+```
 
 ## Coverage
 
+```bash
 ### Version
 
 > solidity-coverage: v0.8.16
@@ -211,6 +214,7 @@ SimpleSwap Tests
 | TokenA.sol     | 100       | 50        | 100     | 100     |                 |
 | TokenB.sol     | 100       | 50        | 100     | 100     |                 |
 | **All files**  | **84.72** | **54.55** | **100** | **83**  |                 |
+```
 
 ## Included Tests
 
