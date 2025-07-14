@@ -2,6 +2,18 @@
 
 A simple decentralized exchange (DEX) implemented in Solidity that allows the exchange of ERC20 tokens with liquidity provision.
 
+## 🚀 Live Demo
+
+**Try the application live:** [https://simple-swap-d-app.vercel.app/](https://simple-swap-d-app.vercel.app/)
+
+Experience the full functionality of SimpleSwap DEX including:
+
+- 🔗 MetaMask wallet connection
+- 🪙 Mint test tokens (Token A & Token B)
+- 💧 Add/remove liquidity to pools
+- 🔄 Swap tokens with real-time pricing
+- 📊 View pool reserves and account balances
+
 ## Features
 
 - **Token Exchange**: Exchange ERC20 tokens in a decentralized manner
@@ -101,7 +113,7 @@ getAmountOut(amountIn, reserveIn, reserveOut);
    npx hardhat coverage
    ```
 
-## Test
+### Test
 
 SimpleSwap Tests
 ✔ testing getAmountOut with zero amountIn (260ms)
@@ -116,7 +128,7 @@ SimpleSwap Tests
 
 9 passing (5s)
 
-## Gas Report
+### Gas Report
 
 ### Configuration
 
@@ -158,21 +170,21 @@ SimpleSwap Tests
 
 ## Coverage
 
-# Version
+### Version
 
 > solidity-coverage: v0.8.16
 
-# Instrumenting for coverage...
+### Instrumenting for coverage...
 
 > SimpleSwap.sol
 > TokenA.sol
 > TokenB.sol
 
-# Compilation:
+### Compilation:
 
 Compiled 9 Solidity files successfully (evm target: paris).
 
-# Network Info
+### Network Info
 
 > HardhatEVM: v2.25.0
 > network: hardhat
@@ -190,7 +202,7 @@ SimpleSwap Tests
 
 9 passing (3s)
 
-## Coverage Report
+### Coverage Report
 
 | File           | % Stmts   | % Branch  | % Funcs | % Lines | Uncovered Lines |
 | -------------- | --------- | --------- | ------- | ------- | --------------- |

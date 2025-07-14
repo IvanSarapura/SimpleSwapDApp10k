@@ -190,8 +190,7 @@ body {
    al interactuar con la información de cuenta */
 .account-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 16px rgba(245, 245, 220, 0.2);
-  border-color: rgba(245, 245, 220, 0.6);
+  box-shadow: 0 8px 16px rgba(210, 105, 30, 0.3);
 }
 
 .account-card h3 {
