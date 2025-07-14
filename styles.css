@@ -1,0 +1,913 @@
+/* ============================================
+   RESET Y ESTILOS BASE
+   ============================================ */
+
+/* Reset global y box-sizing - Elimina estilos por defecto del navegador 
+   para tener un control total sobre el diseño */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Estilos base del body - Establece el tema oscuro principal de la aplicación
+   con tipografía moderna y previene scroll horizontal */
+body {
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    sans-serif;
+  background: #0d1117;
+  color: #e6edf3;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ============================================
+   SCROLLBAR PERSONALIZADA
+   ============================================ */
+
+/* Estilos del scrollbar - Personaliza la barra de desplazamiento para mantener
+   la cohesión visual con el tema dorado/oscuro de la aplicación */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #21262d;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, #d2691e, #cd853f);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, #ff8c00, #daa520);
+}
+
+/* ============================================
+   NAVEGACIÓN
+   ============================================ */
+
+/* Barra de navegación principal - Header fijo con efecto glassmorphism que
+   permanece visible durante el scroll para acceso constante a funciones principales */
+.navbar {
+  background: rgba(22, 27, 34, 0.95);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(210, 105, 30, 0.4);
+  padding: 1rem 0;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+}
+
+/* Contenedor de navegación - Layout flexbox centrado con ancho máximo
+   para mantener el contenido alineado en pantallas grandes */
+.nav-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 1rem;
+}
+
+/* Logo con gradiente - Branding prominente que utiliza el esquema de colores
+   dorado característico de la aplicación DeFi */
+.logo {
+  font-size: 2rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, #ff8c00, #daa520, #cd853f);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Sección derecha de navegación - Agrupa elementos de control como precios
+   y conexión de wallet para fácil acceso del usuario */
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+/* Sección de precios en navbar - Muestra información de precios en tiempo real
+   con diseño compacto para monitoreo constante durante el trading */
+.price-section {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background: rgba(33, 38, 45, 0.8);
+  padding: 0.5rem 1rem;
+  border-radius: 0.75rem;
+  border: 1px solid rgba(210, 105, 30, 0.4);
+}
+
+/* Botón de precios - Trigger para actualizar precios con colores distintivos
+   para diferenciarlo de otros botones de acción */
+.price-btn {
+  background: linear-gradient(135deg, #2f4f4f, #4682b4);
+  color: #e6edf3;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  font-size: 0.875rem;
+}
+
+.price-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(70, 130, 180, 0.4);
+}
+
+/* Display de precios - Información de precio en formato compacto y legible */
+.price-display {
+  font-size: 0.875rem;
+  color: #b8c5d6;
+}
+
+/* Botón de conexión - CTA principal para conectar wallet con diseño prominente
+   que destaca sobre otros elementos de la interfaz */
+.connect-btn {
+  background: linear-gradient(135deg, #d2691e, #cd853f);
+  color: #fff;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.75rem;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  font-size: 1rem;
+}
+
+.connect-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(210, 105, 30, 0.4);
+}
+
+/* ============================================
+   CONTENIDO PRINCIPAL
+   ============================================ */
+
+/* Contenedor principal - Espaciado base para el contenido bajo la navegación */
+.main-content {
+  padding: 2rem 0;
+}
+
+/* Contenedor general - Wrapper centrado con ancho máximo para mantener
+   la legibilidad en pantallas grandes */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+/* ============================================
+   INFORMACIÓN DE CUENTA
+   ============================================ */
+
+/* Sección de información de cuenta - Muestra datos del usuario como balances
+   y dirección de wallet de forma prominente */
+.account-info {
+  margin-bottom: 2rem;
+}
+
+/* Card de información de cuenta - Contenedor con efecto glassmorphism
+   para mostrar datos importantes del usuario */
+.account-card {
+  background: rgba(22, 27, 34, 0.9);
+  border: 1px solid rgba(210, 105, 30, 0.4);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s ease;
+}
+
+/* Efectos hover para la card de información de cuenta - Feedback visual
+   al interactuar con la información de cuenta */
+.account-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(245, 245, 220, 0.2);
+  border-color: rgba(245, 245, 220, 0.6);
+}
+
+.account-card h3 {
+  color: #daa520;
+  margin-bottom: 1rem;
+  font-size: 1.25rem;
+}
+
+/* Grid de balances - Layout responsivo para mostrar múltiples balances
+   de tokens de forma organizada */
+.balances {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+/* Items individuales de balance - Cada token balance con su respectivo valor
+   en formato clave-valor para fácil lectura */
+.balance-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem;
+  background: rgba(33, 38, 45, 0.6);
+  border-radius: 0.5rem;
+  border: 1px solid rgba(210, 105, 30, 0.3);
+}
+
+/* ============================================
+   LAYOUT DE GRID PRINCIPAL
+   ============================================ */
+
+/* Contenedor de grid principal - Layout de 3 columnas para desktop:
+   liquidez | swap | precios/información - Optimizado para trading eficiente */
+.grid-container {
+  display: grid;
+  grid-template-columns: 1fr 1.5fr 1fr;
+  gap: 2rem;
+  align-items: start;
+}
+
+/* Columna de precios con flexbox - Layout vertical para información de precios
+   y reservas que se adapta dinámicamente al contenido */
+.price-column {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 600px;
+}
+
+/* Card de información de cuenta en la columna de precios - Espaciado específico
+   para integración en la columna lateral */
+.price-column .account-info {
+  margin-bottom: 1.5rem;
+}
+
+/* Card de precios que se estira - Utiliza flex para ocupar el espacio disponible
+   en la columna de precios */
+.price-info-card {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+/* ============================================
+   CARDS - SISTEMA DE DISEÑO BASE
+   ============================================ */
+
+/* Card base - Componente fundamental con glassmorphism que proporciona
+   consistencia visual en toda la aplicación */
+.card {
+  background: rgba(22, 27, 34, 0.9);
+  border: 1px solid rgba(210, 105, 30, 0.4);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s ease;
+  margin-bottom: 1.5rem;
+}
+
+/* Efectos hover para cards - Feedback visual sutil que mejora la interactividad */
+.card:hover {
+  box-shadow: 0 8px 16px rgba(210, 105, 30, 0.3);
+  transform: translateY(-2px);
+}
+
+/* Títulos principales en cards - Jerarquía visual con color dorado distintivo */
+.card h3 {
+  color: #daa520;
+  margin-bottom: 1rem;
+  font-size: 1.25rem;
+  text-align: center;
+}
+
+/* Subtítulos en cards - Jerarquía secundaria con color verde complementario */
+.card h4 {
+  color: #8fbc8f;
+  margin-bottom: 0.75rem;
+  font-size: 1rem;
+}
+
+/* ============================================
+   SISTEMA DE BOTONES
+   ============================================ */
+
+/* Botón base - Componente fundamental con animaciones suaves para todas
+   las acciones de usuario en la aplicación */
+.btn {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  font-size: 1rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-decoration: none;
+  justify-content: center;
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Botón primario - Acciones principales como swap y confirmaciones */
+.btn-primary {
+  background: linear-gradient(135deg, #d2691e, #cd853f);
+  color: white;
+}
+
+.btn-primary:hover {
+  box-shadow: 0 4px 8px rgba(210, 105, 30, 0.4);
+}
+
+/* Botón secundario - Acciones de liquidez y funciones complementarias */
+.btn-secondary {
+  background: linear-gradient(135deg, #556b2f, #6b8e23);
+  color: white;
+}
+
+.btn-secondary:hover {
+  box-shadow: 0 4px 8px rgba(107, 142, 35, 0.4);
+}
+
+/* Botón de advertencia - Actualizaciones de precios y funciones informativas */
+.btn-warning {
+  background: linear-gradient(135deg, #2f4f4f, #4682b4);
+  color: white;
+}
+
+.btn-warning:hover {
+  box-shadow: 0 4px 8px rgba(70, 130, 180, 0.4);
+}
+
+/* Botón de éxito/peligro - Acciones críticas como remover liquidez */
+.btn-success {
+  background: linear-gradient(135deg, #8b0000, #a52a2a);
+  color: white;
+}
+
+.btn-success:hover {
+  box-shadow: 0 4px 8px rgba(165, 42, 42, 0.4);
+}
+
+/* Botón de ancho completo - Para acciones principales que requieren énfasis */
+.full-width {
+  width: 100%;
+}
+
+/* ============================================
+   GRUPOS DE BOTONES
+   ============================================ */
+
+/* Grupo de botones - Layout vertical para múltiples acciones relacionadas */
+.button-group {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+/* ============================================
+   ESTILOS DE LIQUIDEZ
+   ============================================ */
+
+/* Contenedor de inputs de liquidez - Layout vertical para entrada de datos
+   de liquidez con espaciado consistente */
+.liquidity-inputs {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+/* Grupo de inputs - Contenedor para label e input con espaciado apropiado */
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.input-group label {
+  font-weight: 600;
+  color: #b8c5d6;
+  font-size: 0.875rem;
+}
+
+/* Input de liquidez - Campo de entrada para cantidades de liquidez
+   con focus states para mejor UX */
+.liquidity-input {
+  padding: 0.75rem;
+  background: rgba(33, 38, 45, 0.8);
+  border: 1px solid rgba(210, 105, 30, 0.4);
+  border-radius: 0.5rem;
+  color: #e6edf3;
+  font-size: 1rem;
+  outline: none;
+  transition: all 0.3s ease;
+}
+
+.liquidity-input:focus {
+  border-color: #daa520;
+  box-shadow: 0 0 0 2px rgba(218, 165, 32, 0.3);
+}
+
+.liquidity-input::placeholder {
+  color: #7d8590;
+}
+
+/* ============================================
+   CARD DE SWAP - COMPONENTE PRINCIPAL
+   ============================================ */
+
+/* Card principal de swap - Componente central de la aplicación con mayor
+   prominencia visual para el intercambio de tokens */
+.swap-card {
+  background: rgba(22, 27, 34, 0.95);
+  border: 1px solid rgba(210, 105, 30, 0.5);
+}
+
+/* Título de la card de swap - Branding prominente con gradiente dorado */
+.swap-card h2 {
+  text-align: center;
+  background: linear-gradient(135deg, #ff8c00, #daa520, #cd853f);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 1.5rem;
+  font-size: 1.875rem;
+}
+
+/* ============================================
+   SECCIONES DE SWAP
+   ============================================ */
+
+/* Sección de swap - Contenedor para cada token en el intercambio */
+.swap-section {
+  margin-bottom: 1rem;
+}
+
+/* Header de swap - Controles superiores con selector de token y balance */
+.swap-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.swap-header label {
+  font-weight: 600;
+  color: #b8c5d6;
+}
+
+/* Selector de token - Dropdown para seleccionar el token a intercambiar */
+.token-select {
+  background: rgba(33, 38, 45, 0.9);
+  border: 1px solid rgba(210, 105, 30, 0.4);
+  border-radius: 0.5rem;
+  padding: 0.5rem 1rem;
+  color: #e6edf3;
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+
+.token-select:focus {
+  outline: none;
+  border-color: #daa520;
+}
+
+/* Contenedor de input de cantidad - Campo principal para entrada de valores
+   con efectos visuales mejorados */
+.amount-input-container {
+  background: rgba(33, 38, 45, 0.8);
+  border: 1px solid rgba(210, 105, 30, 0.4);
+  border-radius: 0.75rem;
+  padding: 1rem;
+  transition: all 0.3s ease;
+}
+
+/* Input de cantidad - Campo de entrada principal con tipografía grande
+   para facilitar la lectura de números */
+.amount-input {
+  width: 100%;
+  background: transparent;
+  border: none;
+  color: #e6edf3;
+  font-size: 1.5rem;
+  font-weight: 600;
+  outline: none;
+  transition: all 0.3s ease;
+}
+
+.amount-input::placeholder {
+  color: #7d8590;
+}
+
+.amount-input:read-only {
+  color: #b8c5d6;
+}
+
+/* Efecto focus para input de cantidad - Feedback visual con color dorado */
+.amount-input:focus {
+  color: #daa520;
+  outline: none;
+}
+
+/* Efecto focus para el contenedor cuando el input está activo */
+.amount-input-container:focus-within {
+  border-color: #daa520;
+  box-shadow: 0 0 0 2px rgba(218, 165, 32, 0.3);
+  transform: scale(1.02);
+  outline: none;
+}
+
+/* ============================================
+   DIRECCIÓN DE SWAP
+   ============================================ */
+
+/* Contenedor de dirección de swap - Centrado para el botón de intercambio */
+.swap-direction {
+  display: flex;
+  justify-content: center;
+  margin: 1rem 0;
+}
+
+/* Botón de dirección - Permite intercambiar la dirección del swap
+   con animación rotacional para feedback visual */
+.direction-btn {
+  background: rgba(22, 27, 34, 0.95);
+  border: 2px solid rgba(210, 105, 30, 0.6);
+  border-radius: 50%;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #daa520;
+  font-size: 1.25rem;
+  transition: all 0.3s ease;
+}
+
+.direction-btn:hover {
+  transform: rotate(180deg);
+  background: rgba(210, 105, 30, 0.3);
+  color: #ff8c00;
+}
+
+/* ============================================
+   INFORMACIÓN DE SWAP
+   ============================================ */
+
+/* Contenedor de información de swap - Muestra detalles del intercambio
+   como rates, slippage y fees */
+.swap-info {
+  background: rgba(33, 38, 45, 0.6);
+  border-radius: 0.75rem;
+  padding: 1rem;
+  margin: 1rem 0;
+}
+
+/* Items de información - Formato clave-valor para datos del swap */
+.info-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.info-item:last-child {
+  margin-bottom: 0;
+}
+
+.info-item span:first-child {
+  color: #7d8590;
+  font-size: 0.875rem;
+}
+
+.info-item span:last-child {
+  color: #e6edf3;
+  font-weight: 600;
+}
+
+/* ============================================
+   BOTONES DE ACCIÓN
+   ============================================ */
+
+/* Contenedor de botones de acción - Layout vertical para acciones principales
+   como swap, approve, etc. */
+.action-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+/* ============================================
+   INFORMACIÓN DE PRECIOS Y RESERVAS
+   ============================================ */
+
+/* Información de precios y reservas - Muestra datos del mercado en tiempo real */
+.price-info,
+.reserves-info {
+  margin-bottom: 1.5rem;
+}
+
+/* Items de precios y reservas - Formato consistente para mostrar datos
+   de mercado con jerarquía visual clara */
+.price-item,
+.reserve-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem;
+  background: rgba(33, 38, 45, 0.5);
+  border-radius: 0.5rem;
+  border: 1px solid rgba(210, 105, 30, 0.3);
+  margin-bottom: 0.5rem;
+}
+
+.price-item:last-child,
+.reserve-item:last-child {
+  margin-bottom: 0;
+}
+
+.price-item span:first-child,
+.reserve-item span:first-child {
+  color: #7d8590;
+  font-size: 0.875rem;
+}
+
+.price-item span:last-child,
+.reserve-item span:last-child {
+  color: #e6edf3;
+  font-weight: 600;
+}
+
+/* ============================================
+   INDICADOR DE CARGA
+   ============================================ */
+
+/* Indicador de carga - Overlay modal para transacciones pending
+   con backdrop blur para enfocar atención */
+.loading-indicator {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  backdrop-filter: blur(5px);
+}
+
+/* Spinner - Animación de carga con colores de marca */
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid rgba(210, 105, 30, 0.3);
+  border-top: 4px solid #daa520;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 1rem;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* ============================================
+   SISTEMA DE NOTIFICACIONES
+   ============================================ */
+
+/* Notificación base - Sistema de toast notifications con posicionamiento
+   fijo y z-index alto para visibilidad */
+.notification {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: rgba(22, 27, 34, 0.95);
+  border: 1px solid rgba(210, 105, 30, 0.4);
+  border-radius: 0.75rem;
+  padding: 1rem;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+  z-index: 9000;
+  max-width: 400px;
+  min-width: 300px;
+}
+
+/* Contenido de notificación - Layout flexbox con botón de cierre */
+.notification-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+/* Tipos de notificación - Diferentes colores para diferentes tipos de mensajes */
+.notification.success {
+  border-color: rgba(16, 185, 129, 0.5);
+  background: rgba(5, 150, 105, 0.1);
+}
+
+.notification.error {
+  border-color: rgba(239, 68, 68, 0.5);
+  background: rgba(220, 38, 38, 0.1);
+}
+
+.notification.warning {
+  border-color: rgba(245, 158, 11, 0.5);
+  background: rgba(217, 119, 6, 0.1);
+}
+
+.notification.info {
+  border-color: rgba(59, 130, 246, 0.5);
+  background: rgba(29, 78, 216, 0.1);
+}
+
+/* Botón de cerrar notificación - Botón discreto para cerrar mensajes */
+.close-btn {
+  background: none;
+  border: none;
+  color: #7d8590;
+  cursor: pointer;
+  font-size: 1.5rem;
+  padding: 0;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.close-btn:hover {
+  color: #e6edf3;
+}
+
+/* ============================================
+   CLASES DE UTILIDAD
+   ============================================ */
+
+/* Clase para ocultar elementos - Utilidad para mostrar/ocultar contenido */
+.hidden {
+  display: none;
+}
+
+/* ============================================
+   DISEÑO RESPONSIVO
+   ============================================ */
+
+/* Pantallas grandes - Mantiene el layout de 3 columnas pero ajusta proporciones */
+@media (max-width: 1024px) and (min-width: 769px) {
+  .grid-container {
+    grid-template-columns: 1fr 1.2fr 1fr;
+    gap: 1.5rem;
+  }
+}
+
+/* Tablet y pantallas medianas - Convierte a layout vertical apilado
+   para mejor usabilidad en pantallas táctiles */
+@media (max-width: 768px) {
+  .nav-container {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .nav-right {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .price-section {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .grid-container {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .price-column {
+    min-height: auto;
+  }
+
+  .balances {
+    grid-template-columns: 1fr;
+  }
+
+  .button-group {
+    grid-template-columns: 1fr;
+  }
+
+  .logo {
+    font-size: 1.5rem;
+  }
+
+  .notification {
+    top: 10px;
+    right: 10px;
+    left: 10px;
+    max-width: none;
+  }
+}
+
+/* Móviles - Optimizaciones adicionales para pantallas pequeñas */
+@media (max-width: 480px) {
+  .container {
+    padding: 0 0.5rem;
+  }
+
+  .card {
+    padding: 1rem;
+  }
+
+  .account-card {
+    padding: 1rem;
+  }
+
+  .amount-input {
+    font-size: 1.25rem;
+  }
+
+  .swap-card h2 {
+    font-size: 1.5rem;
+  }
+}
+
+/* ============================================
+   ANIMACIONES
+   ============================================ */
+
+/* Animación de fade in - Entrada suave para elementos dinámicos */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Aplicar animación a cards - Entrada suave para mejor UX */
+.card {
+  animation: fadeIn 0.5s ease-out;
+}
+
+/* ============================================
+   ESTILOS DE FOCUS
+   ============================================ */
+
+/* Estilos de focus para elementos interactivos - Accesibilidad mejorada
+   con outline visible en color de marca */
+button:focus,
+input:focus,
+select:focus {
+  outline: 2px solid #daa520;
+  outline-offset: 2px;
+}
+
+/* ============================================
+   EFECTOS HOVER
+   ============================================ */
+
+/* Efectos hover para cards - Feedback visual consistente */
+.card:hover {
+  border-color: rgba(210, 105, 30, 0.6);
+}
+
+/* Efectos hover para items de balance, precios y reservas - Interactividad
+   mejorada para elementos de información */
+.balance-item:hover,
+.price-item:hover,
+.reserve-item:hover {
+  background: rgba(33, 38, 45, 0.8);
+  border-color: rgba(210, 105, 30, 0.5);
+}
