@@ -116,104 +116,119 @@ getAmountOut(amountIn, reserveIn, reserveOut);
 ### Test
 
 ```bash
-SimpleSwap Tests
-✔ testing getAmountOut with zero amountIn (260ms)
-✔ testing getAmountOut with zero reserves (45ms)
-✔ testing addLiquidity with same token (88ms)
-✔ testing add liquidity and mint LP tokens (44ms)
-✔ testing getPrice (66ms)
-✔ testing swapExactTokensForTokens (44ms)
-✔ testing removeLiquidity (60ms)
-✔ testing swapExactTokensForTokens with no liquidity (57ms)
-✔ testing getReserves
+  SimpleSwap Tests
+    ✔ testing getAmountOut with zero amountIn (260ms)
+    ✔ testing getAmountOut with zero reserves (45ms)
+    ✔ testing addLiquidity with same token (88ms)
+    ✔ testing add liquidity and mint LP tokens (44ms)
+    ✔ testing getPrice (66ms)
+    ✔ testing swapExactTokensForTokens (44ms)
+    ✔ testing removeLiquidity (60ms)
+    ✔ testing swapExactTokensForTokens with no liquidity (57ms)
+    ✔ testing getReserves
 
-9 passing (5s)
 
-### Gas Report
+  9 passing (5s)
 
-### Configuration
-
-- **Solidity**: 0.8.28
-- **Optimization**: true
-- **Runs**: 200
-- **viaIR**: true
-- **Block limit**: 30,000,000 gas
-
-### Methods
-
-| Contract       | Method                   | Min     | Max     | Avg     | # calls | USD (avg) |
-| -------------- | ------------------------ | ------- | ------- | ------- | ------- | --------- |
-| **SimpleSwap** |                          |         |         |         |         |           |
-|                | addLiquidity             | 196,467 | 196,498 | 196,475 | 4       | -         |
-|                | approve                  | -       | -       | 46,012  | 1       | -         |
-|                | removeLiquidity          | -       | -       | 64,129  | 1       | -         |
-|                | swapExactTokensForTokens | -       | -       | 69,010  | 1       | -         |
-| **TokenA**     |                          |         |         |         |         |           |
-|                | approve                  | 45,962  | 45,974  | 45,967  | 7       | -         |
-|                | mint                     | -       | -       | 36,086  | 9       | -         |
-| **TokenB**     |                          |         |         |         |         |           |
-|                | approve                  | 45,962  | 45,974  | 45,971  | 4       | -         |
-|                | mint                     | -       | -       | 36,086  | 9       | -         |
-
-### Deployments
-
-| Contract   | Gas Used  | % of limit |
-| ---------- | --------- | ---------- |
-| SimpleSwap | 1,325,282 | 4.4%       |
-| TokenA     | 644,865   | 2.1%       |
-| TokenB     | 644,865   | 2.1%       |
-
-### Notes
-
-- ◯ Execution gas for this method does not include intrinsic gas overhead
-- △ Cost was non-zero but below the precision setting for the currency display
-- **Toolchain**: hardhat
+······················································································································
+|  Solidity and Network Configuration                                                                                │
+·································|·················|···············|·················|································
+|  Solidity: 0.8.28              ·  Optim: true    ·  Runs: 200    ·  viaIR: true    ·     Block: 30,000,000 gas     │
+·································|·················|···············|·················|································
+|  Methods                                                                                                           │
+·································|·················|···············|·················|················|···············
+|  Contracts / Methods           ·  Min            ·  Max          ·  Avg            ·  # calls       ·  usd (avg)   │
+·································|·················|···············|·················|················|···············
+|  SimpleSwap                    ·                                                                                   │
+·································|·················|···············|·················|················|···············
+|      addLiquidity              ·        196,467  ·      196,498  ·        196,475  ·             4  ·           -  │
+·································|·················|···············|·················|················|···············
+|      approve                   ·              -  ·            -  ·         46,012  ·             1  ·           -  │
+·································|·················|···············|·················|················|···············
+|      removeLiquidity           ·              -  ·            -  ·         64,129  ·             1  ·           -  │
+·································|·················|···············|·················|················|···············
+|      swapExactTokensForTokens  ·              -  ·            -  ·         69,010  ·             1  ·           -  │
+·································|·················|···············|·················|················|···············
+|  TokenA                        ·                                                                                   │
+·································|·················|···············|·················|················|···············
+|      approve                   ·         45,962  ·       45,974  ·         45,967  ·             7  ·           -  │
+·································|·················|···············|·················|················|···············
+|      mint                      ·              -  ·            -  ·         36,086  ·             9  ·           -  │
+·································|·················|···············|·················|················|···············
+|  TokenB                        ·                                                                                   │
+·································|·················|···············|·················|················|···············
+|      approve                   ·         45,962  ·       45,974  ·         45,971  ·             4  ·           -  │
+·································|·················|···············|·················|················|···············
+|      mint                      ·              -  ·            -  ·         36,086  ·             9  ·           -  │
+·································|·················|···············|·················|················|···············
+|  Deployments                                     ·                                 ·  % of limit    ·              │
+·································|·················|···············|·················|················|···············
+|  SimpleSwap                    ·              -  ·            -  ·      1,325,282  ·         4.4 %  ·           -  │
+·································|·················|···············|·················|················|···············
+|  TokenA                        ·              -  ·            -  ·        644,865  ·         2.1 %  ·           -  │
+·································|·················|···············|·················|················|···············
+|  TokenB                        ·              -  ·            -  ·        644,865  ·         2.1 %  ·           -  │
+·································|·················|···············|·················|················|···············
+|  Key                                                                                                               │
+······················································································································
+|  ◯  Execution gas for this method does not include intrinsic gas overhead                                          │
+······················································································································
+|  △  Cost was non-zero but below the precision setting for the currency display (see options)                       │
+······················································································································
+|  Toolchain:  hardhat                                                                                               │
+······················································································································
 ```
 
 ## Coverage
 
 ```bash
-### Version
-
+Version
+=======
 > solidity-coverage: v0.8.16
 
-### Instrumenting for coverage...
+Instrumenting for coverage...
+=============================
 
 > SimpleSwap.sol
 > TokenA.sol
 > TokenB.sol
 
-### Compilation:
+Compilation:
+============
 
 Compiled 9 Solidity files successfully (evm target: paris).
 
-### Network Info
-
+Network Info
+============
 > HardhatEVM: v2.25.0
-> network: hardhat
+> network:    hardhat
 
-SimpleSwap Tests
-✔ testing getAmountOut with zero amountIn (117ms)
-✔ testing getAmountOut with zero reserves
-✔ testing addLiquidity with same token (63ms)
-✔ testing add liquidity and mint LP tokens (188ms)
-✔ testing getPrice (177ms)
-✔ testing swapExactTokensForTokens (256ms)
-✔ testing removeLiquidity (213ms)
-✔ testing swapExactTokensForTokens with no liquidity (68ms)
-✔ testing getReserves
 
-9 passing (3s)
 
-### Coverage Report
+  SimpleSwap Tests
+    ✔ testing getAmountOut with zero amountIn (117ms)
+    ✔ testing getAmountOut with zero reserves
+    ✔ testing addLiquidity with same token (63ms)
+    ✔ testing add liquidity and mint LP tokens (188ms)
+    ✔ testing getPrice (177ms)
+    ✔ testing swapExactTokensForTokens (256ms)
+    ✔ testing removeLiquidity (213ms)
+    ✔ testing swapExactTokensForTokens with no liquidity (68ms)
+    ✔ testing getReserves
 
-| File           | % Stmts   | % Branch  | % Funcs | % Lines | Uncovered Lines |
-| -------------- | --------- | --------- | ------- | ------- | --------------- |
-| **contracts/** | 84.72     | 54.55     | 100     | 83      |                 |
-| SimpleSwap.sol | 83.82     | 54.84     | 100     | 82.29   | 383,439,440     |
-| TokenA.sol     | 100       | 50        | 100     | 100     |                 |
-| TokenB.sol     | 100       | 50        | 100     | 100     |                 |
-| **All files**  | **84.72** | **54.55** | **100** | **83**  |                 |
+
+  9 passing (3s)
+
+-----------------|----------|----------|----------|----------|----------------|
+File             |  % Stmts | % Branch |  % Funcs |  % Lines |Uncovered Lines |
+-----------------|----------|----------|----------|----------|----------------|
+ contracts/      |    84.72 |    54.55 |      100 |       83 |                |
+  SimpleSwap.sol |    83.82 |    54.84 |      100 |    82.29 |... 383,439,440 |
+  TokenA.sol     |      100 |       50 |      100 |      100 |                |
+  TokenB.sol     |      100 |       50 |      100 |      100 |                |
+-----------------|----------|----------|----------|----------|----------------|
+All files        |    84.72 |    54.55 |      100 |       83 |                |
+-----------------|----------|----------|----------|----------|----------------|
 ```
 
 ## Included Tests
