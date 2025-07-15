@@ -697,7 +697,7 @@ async function mintTokenA() {
     showNotification("1000 Token A minted successfully!", "success");
 
     // Update balance display
-    await actualizarBalances();
+    await updateBalances();
   } catch (error) {
     console.error("Error minting Token A:", error);
     showNotification(`Error minting: ${error.message}`, "error");
@@ -739,7 +739,7 @@ async function mintTokenB() {
     showNotification("1000 Token B minted successfully!", "success");
 
     // Update balance display
-    await actualizarBalances();
+    await updateBalances();
   } catch (error) {
     console.error("Error minting Token B:", error);
     showNotification(`Error minting: ${error.message}`, "error");
