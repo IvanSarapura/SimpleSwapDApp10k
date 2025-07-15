@@ -101,6 +101,46 @@
                 <i class="fas fa-plus-circle"></i> Add Liquidity
               </button>
             </div>
+
+            <!-- Remove Liquidity interface -->
+            <div class="card">
+              <h3>Remove Liquidity</h3>
+              <div class="balance-info">
+                <div class="balance-item">
+                  <span>LP Token Balance:</span>
+                  <span id="lpTokenBalance">0</span>
+                </div>
+              </div>
+              <div class="liquidity-inputs">
+                <div class="input-group">
+                  <label>LP Tokens to Remove:</label>
+                  <input
+                    id="removeLiquidityAmount"
+                    type="number"
+                    placeholder="0.0"
+                    step="0.000001"
+                    min="0"
+                    class="liquidity-input"
+                  />
+                </div>
+              </div>
+              <div class="preview-section">
+                <h4>You will receive:</h4>
+                <div class="preview-amounts">
+                  <div class="preview-item">
+                    <span>Token A:</span>
+                    <span id="previewAmountA">0</span>
+                  </div>
+                  <div class="preview-item">
+                    <span>Token B:</span>
+                    <span id="previewAmountB">0</span>
+                  </div>
+                </div>
+              </div>
+              <button id="removeLiquidityBtn" class="btn btn-danger full-width">
+                <i class="fas fa-minus-circle"></i> Remove Liquidity
+              </button>
+            </div>
           </div>
 
           <!-- Central swap interface - main functionality -->
@@ -201,6 +241,10 @@
                   <div class="balance-item">
                     <span>Balance Token B:</span>
                     <span id="balanceTokenB">0</span>
+                  </div>
+                  <div class="balance-item">
+                    <span>LP Token Balance:</span>
+                    <span id="lpTokenBalanceAccount">0</span>
                   </div>
                 </div>
               </div>

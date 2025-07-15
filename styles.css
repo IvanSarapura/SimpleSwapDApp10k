@@ -356,14 +356,29 @@ body {
   box-shadow: 0 4px 8px rgba(70, 130, 180, 0.4);
 }
 
-/* Botón de éxito/peligro - Acciones críticas como remover liquidez */
+/* Botón de éxito - Acciones positivas como agregar liquidez */
 .btn-success {
-  background: linear-gradient(135deg, #8b0000, #a52a2a);
+  background: linear-gradient(135deg, #556b2f, #6b8e23);
   color: white;
 }
 
 .btn-success:hover {
+  box-shadow: 0 4px 8px rgba(107, 142, 35, 0.4);
+}
+
+/* Botón de peligro - Acciones críticas como remover liquidez */
+.btn-danger {
+  background: linear-gradient(135deg, #8b0000, #a52a2a);
+  color: white;
+}
+
+.btn-danger:hover {
   box-shadow: 0 4px 8px rgba(165, 42, 42, 0.4);
+}
+
+.btn-danger:disabled {
+  background: #6c757d;
+  border-color: #6c757d;
 }
 
 /* Botón de ancho completo - Para acciones principales que requieren énfasis */
@@ -619,6 +634,79 @@ body {
   flex-direction: column;
   gap: 1rem;
   margin-top: 1.5rem;
+}
+
+/* ============================================
+   REMOVE LIQUIDITY COMPONENTS
+   ============================================ */
+
+/* Preview section - Muestra las cantidades esperadas de tokens al remover liquidez */
+.preview-section {
+  margin: 15px 0;
+  padding: 15px;
+  background: rgba(33, 38, 45, 0.6);
+  border-radius: 8px;
+  border: 1px solid rgba(210, 105, 30, 0.3);
+}
+
+.preview-section h4 {
+  margin: 0 0 10px 0;
+  color: #8fbc8f;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+/* Preview amounts - Layout horizontal para mostrar las cantidades esperadas */
+.preview-amounts {
+  display: flex;
+  justify-content: space-between;
+  gap: 15px;
+}
+
+/* Preview item - Cada token individual con su cantidad esperada */
+.preview-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex: 1;
+  padding: 8px 12px;
+  background: rgba(22, 27, 34, 0.8);
+  border-radius: 6px;
+  border: 1px solid rgba(210, 105, 30, 0.3);
+}
+
+.preview-item span:first-child {
+  font-weight: 500;
+  color: #b8c5d6;
+  font-size: 0.875rem;
+}
+
+.preview-item span:last-child {
+  font-weight: 600;
+  color: #daa520;
+  font-size: 0.875rem;
+}
+
+/* Balance info - Información de balances específica para remove liquidity */
+.balance-info {
+  margin-bottom: 15px;
+}
+
+.balance-info .balance-item {
+  background: rgba(33, 38, 45, 0.6);
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+  border: 1px solid rgba(210, 105, 30, 0.3);
+}
+
+.balance-info .balance-item span:first-child {
+  color: #7d8590;
+  font-size: 0.875rem;
+}
+
+.balance-info .balance-item span:last-child {
+  color: #daa520;
+  font-weight: 600;
 }
 
 /* ============================================

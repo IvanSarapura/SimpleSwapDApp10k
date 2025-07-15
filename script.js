@@ -94,6 +94,24 @@ const CONTRACT_ABIS = {
       stateMutability: "nonpayable",
       type: "function",
     },
+    {
+      inputs: [
+        { internalType: "address", name: "tokenA", type: "address" },
+        { internalType: "address", name: "tokenB", type: "address" },
+        { internalType: "uint256", name: "liquidity", type: "uint256" },
+        { internalType: "uint256", name: "amountAMin", type: "uint256" },
+        { internalType: "uint256", name: "amountBMin", type: "uint256" },
+        { internalType: "address", name: "to", type: "address" },
+        { internalType: "uint256", name: "deadline", type: "uint256" },
+      ],
+      name: "removeLiquidity",
+      outputs: [
+        { internalType: "uint256", name: "amountA", type: "uint256" },
+        { internalType: "uint256", name: "amountB", type: "uint256" },
+      ],
+      stateMutability: "nonpayable",
+      type: "function",
+    },
   ],
 
   TOKEN_A: [
@@ -190,6 +208,7 @@ const elements = {
   accountAddress: document.getElementById("accountAddress"),
   balanceTokenA: document.getElementById("balanceTokenA"),
   balanceTokenB: document.getElementById("balanceTokenB"),
+  lpTokenBalanceAccount: document.getElementById("lpTokenBalanceAccount"),
 
   // Swap elements
   tokenFrom: document.getElementById("tokenFrom"),
@@ -218,6 +237,13 @@ const elements = {
   liquidityAmountA: document.getElementById("liquidityAmountA"),
   liquidityAmountB: document.getElementById("liquidityAmountB"),
   addLiquidityBtn: document.getElementById("addLiquidityBtn"),
+
+  // Remove Liquidity elements
+  removeLiquidityAmount: document.getElementById("removeLiquidityAmount"),
+  removeLiquidityBtn: document.getElementById("removeLiquidityBtn"),
+  lpTokenBalance: document.getElementById("lpTokenBalance"),
+  previewAmountA: document.getElementById("previewAmountA"),
+  previewAmountB: document.getElementById("previewAmountB"),
 
   // UI feedback elements
   loadingIndicator: document.getElementById("loadingIndicator"),
@@ -361,7 +387,12 @@ function disconnect() {
 
 // ===== BALANCE FUNCTIONS =====
 async function updateBalances() {
-  if (!userAddress || !contracts.tokenA || !contracts.tokenB) {
+  if (
+    !userAddress ||
+    !contracts.tokenA ||
+    !contracts.tokenB ||
+    !contracts.simpleSwap
+  ) {
     console.log("Cannot update balances - missing data");
     return;
   }
@@ -372,6 +403,7 @@ async function updateBalances() {
     // Fetch balances from contracts
     const balanceA = await contracts.tokenA.balanceOf(userAddress);
     const balanceB = await contracts.tokenB.balanceOf(userAddress);
+    const lpBalance = await contracts.simpleSwap.balanceOf(userAddress);
 
     // Update UI with formatted balances
     if (elements.balanceTokenA) {
@@ -383,6 +415,18 @@ async function updateBalances() {
     if (elements.balanceTokenB) {
       elements.balanceTokenB.textContent = parseFloat(
         ethers.utils.formatEther(balanceB)
+      ).toFixed(4);
+    }
+
+    if (elements.lpTokenBalance) {
+      elements.lpTokenBalance.textContent = parseFloat(
+        ethers.utils.formatEther(lpBalance)
+      ).toFixed(4);
+    }
+
+    if (elements.lpTokenBalanceAccount) {
+      elements.lpTokenBalanceAccount.textContent = parseFloat(
+        ethers.utils.formatEther(lpBalance)
       ).toFixed(4);
     }
 
@@ -885,6 +929,147 @@ async function addLiquidity() {
   }
 }
 
+// ===== REMOVE LIQUIDITY FUNCTIONS =====
+async function removeLiquidity() {
+  if (!userAddress || !contracts.simpleSwap) {
+    showNotification("Connect your wallet first", "error");
+    return;
+  }
+
+  // Validate input amount
+  const liquidityAmount = elements.removeLiquidityAmount?.value;
+
+  if (!liquidityAmount || parseFloat(liquidityAmount) <= 0) {
+    showNotification("Enter a valid liquidity amount", "error");
+    return;
+  }
+
+  try {
+    showLoading();
+
+    // Update button state
+    if (elements.removeLiquidityBtn) {
+      elements.removeLiquidityBtn.disabled = true;
+      elements.removeLiquidityBtn.innerHTML =
+        '<i class="fas fa-spinner fa-spin"></i> Removing Liquidity...';
+    }
+
+    console.log("Removing liquidity...");
+
+    // Parse liquidity amount
+    const liquidityToRemove = ethers.utils.parseEther(liquidityAmount);
+
+    // Check if user has enough LP tokens
+    const lpBalance = await contracts.simpleSwap.balanceOf(userAddress);
+    if (lpBalance.lt(liquidityToRemove)) {
+      throw new Error("Insufficient LP tokens");
+    }
+
+    // Get current reserves to calculate expected amounts
+    const [reserveA, reserveB] = await contracts.simpleSwap.getReserves(
+      CONTRACT_ADDRESSES.TOKEN_A,
+      CONTRACT_ADDRESSES.TOKEN_B
+    );
+
+    const totalSupply = await contracts.simpleSwap.totalSupply();
+
+    // Calculate expected amounts (for slippage protection)
+    const expectedAmountA = liquidityToRemove.mul(reserveA).div(totalSupply);
+    const expectedAmountB = liquidityToRemove.mul(reserveB).div(totalSupply);
+
+    // Set slippage tolerance (5%)
+    const amountAMin = expectedAmountA.mul(95).div(100);
+    const amountBMin = expectedAmountB.mul(95).div(100);
+
+    // Set deadline (10 minutes from now)
+    const deadline = Math.floor(Date.now() / 1000) + 600;
+
+    // Execute remove liquidity transaction
+    const tx = await contracts.simpleSwap.removeLiquidity(
+      CONTRACT_ADDRESSES.TOKEN_A,
+      CONTRACT_ADDRESSES.TOKEN_B,
+      liquidityToRemove,
+      amountAMin,
+      amountBMin,
+      userAddress,
+      deadline
+    );
+
+    await tx.wait();
+
+    showNotification("Liquidity removed successfully!", "success");
+
+    // Clear input field
+    if (elements.removeLiquidityAmount)
+      elements.removeLiquidityAmount.value = "";
+
+    // Update balances and prices
+    await updateBalances();
+    await updatePrices();
+    await calculateRemoveLiquidityPreview();
+  } catch (error) {
+    console.error("Error removing liquidity:", error);
+    showNotification(`Error removing liquidity: ${error.message}`, "error");
+  } finally {
+    hideLoading();
+    if (elements.removeLiquidityBtn) {
+      elements.removeLiquidityBtn.disabled = false;
+      elements.removeLiquidityBtn.innerHTML =
+        '<i class="fas fa-minus-circle"></i> Remove Liquidity';
+    }
+  }
+}
+
+async function calculateRemoveLiquidityPreview() {
+  if (
+    !contracts.simpleSwap ||
+    !elements.removeLiquidityAmount ||
+    !elements.removeLiquidityAmount.value
+  ) {
+    // Clear preview displays
+    if (elements.previewAmountA) elements.previewAmountA.textContent = "0";
+    if (elements.previewAmountB) elements.previewAmountB.textContent = "0";
+    return;
+  }
+
+  try {
+    const liquidityAmount = ethers.utils.parseEther(
+      elements.removeLiquidityAmount.value
+    );
+
+    // Get current reserves and total supply
+    const [reserveA, reserveB] = await contracts.simpleSwap.getReserves(
+      CONTRACT_ADDRESSES.TOKEN_A,
+      CONTRACT_ADDRESSES.TOKEN_B
+    );
+
+    const totalSupply = await contracts.simpleSwap.totalSupply();
+
+    if (totalSupply.isZero()) {
+      return;
+    }
+
+    // Calculate expected amounts
+    const expectedAmountA = liquidityAmount.mul(reserveA).div(totalSupply);
+    const expectedAmountB = liquidityAmount.mul(reserveB).div(totalSupply);
+
+    // Update preview displays
+    if (elements.previewAmountA) {
+      elements.previewAmountA.textContent = parseFloat(
+        ethers.utils.formatEther(expectedAmountA)
+      ).toFixed(6);
+    }
+
+    if (elements.previewAmountB) {
+      elements.previewAmountB.textContent = parseFloat(
+        ethers.utils.formatEther(expectedAmountB)
+      ).toFixed(6);
+    }
+  } catch (error) {
+    console.error("Error calculating remove liquidity preview:", error);
+  }
+}
+
 // ===== EVENT HANDLERS =====
 function setupEvents() {
   console.log("Setting up event listeners...");
@@ -952,6 +1137,18 @@ function setupEvents() {
   // Liquidity events
   if (elements.addLiquidityBtn) {
     elements.addLiquidityBtn.addEventListener("click", addLiquidity);
+  }
+
+  // Remove liquidity events
+  if (elements.removeLiquidityBtn) {
+    elements.removeLiquidityBtn.addEventListener("click", removeLiquidity);
+  }
+
+  if (elements.removeLiquidityAmount) {
+    elements.removeLiquidityAmount.addEventListener(
+      "input",
+      calculateRemoveLiquidityPreview
+    );
   }
 
   // MetaMask events
