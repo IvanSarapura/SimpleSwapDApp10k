@@ -122,11 +122,11 @@ contract SimpleSwap is ERC20, Ownable {
         (address token0, address token1) = sortTokens(tokenA, tokenB);
 
         // Get reserves for the token pair
-        TokenPairReserves memory r = reserves[token0][token1];
+        TokenPairReserves memory pairReserves = reserves[token0][token1];
 
         (reserveA, reserveB) = tokenA == token0
-            ? (r.reserve0, r.reserve1)
-            : (r.reserve1, r.reserve0);
+            ? (pairReserves.reserve0, pairReserves.reserve1)
+            : (pairReserves.reserve1, pairReserves.reserve0);
     }
 
     /**
@@ -180,11 +180,11 @@ contract SimpleSwap is ERC20, Ownable {
 
         // Sort tokens in ascending order
         (address token0, address token1) = sortTokens(tokenA, tokenB);
-        TokenPairReserves storage r = reserves[token0][token1];
+        TokenPairReserves memory pairReserves = reserves[token0][token1]; // SLOAD unique
 
         // Get reserves for the token pair
-        uint reserve0 = r.reserve0;
-        uint reserve1 = r.reserve1;
+        uint reserve0 = pairReserves.reserve0;
+        uint reserve1 = pairReserves.reserve1;
 
         (uint reserveA, uint reserveB) = tokenA == token0
             ? (reserve0, reserve1)
@@ -215,11 +215,15 @@ contract SimpleSwap is ERC20, Ownable {
 
         // Update reserves for the token pair
         if (tokenA == token0) {
-            r.reserve0 = reserveA + amountA;
-            r.reserve1 = reserveB + amountB;
+            reserves[token0][token1] = TokenPairReserves(
+                reserveA + amountA,
+                reserveB + amountB
+            ); // SSTORE unique
         } else {
-            r.reserve0 = reserveB + amountB;
-            r.reserve1 = reserveA + amountA;
+            reserves[token0][token1] = TokenPairReserves(
+                reserveB + amountB,
+                reserveA + amountA
+            ); // SSTORE unique
         }
 
         emit LiquidityAdded(tokenA, tokenB, amountA, amountB, liquidity);
@@ -255,14 +259,14 @@ contract SimpleSwap is ERC20, Ownable {
 
         if (amountBOptimal <= amountBDesired) {
             // Check if amountB is sufficient
-            require(amountBOptimal >= amountBMin, "Insufficient amountB");
+            require(amountBOptimal >= amountBMin, "Low amountB");
             return (amountADesired, amountBOptimal);
         }
 
         // Calculate optimal amountA based on amountBDesired
         uint amountAOptimal = (amountBDesired * reserveA) / reserveB;
 
-        require(amountAOptimal >= amountAMin, "Insufficient amountA");
+        require(amountAOptimal >= amountAMin, "Low amountA");
         return (amountAOptimal, amountBDesired);
     }
 
@@ -300,7 +304,7 @@ contract SimpleSwap is ERC20, Ownable {
         }
 
         // Check if liquidity is valid
-        require(liquidity > 0, "Insufficient liquidity");
+        require(liquidity > 0, "Low liquidity");
     }
 
     /**
@@ -352,10 +356,10 @@ contract SimpleSwap is ERC20, Ownable {
         uint _totalSupply = totalSupply();
 
         (address token0, address token1) = sortTokens(tokenA, tokenB);
-        TokenPairReserves storage r = reserves[token0][token1];
+        TokenPairReserves memory pairReserves = reserves[token0][token1]; // SLOAD unique
 
-        uint reserve0 = r.reserve0;
-        uint reserve1 = r.reserve1;
+        uint reserve0 = pairReserves.reserve0;
+        uint reserve1 = pairReserves.reserve1;
 
         (uint reserveA, uint reserveB) = tokenA == token0
             ? (reserve0, reserve1)
@@ -365,8 +369,8 @@ contract SimpleSwap is ERC20, Ownable {
         amountA = (liquidity * reserveA) / _totalSupply;
         amountB = (liquidity * reserveB) / _totalSupply;
 
-        require(amountA >= amountAMin, "Insufficient amountA");
-        require(amountB >= amountBMin, "Insufficient amountB");
+        require(amountA >= amountAMin, "Low amountA");
+        require(amountB >= amountBMin, "Low amountB");
 
         // Burn LP tokens
         _burn(msg.sender, liquidity);
@@ -376,11 +380,15 @@ contract SimpleSwap is ERC20, Ownable {
         IERC20(tokenB).transfer(to, amountB);
 
         if (tokenA == token0) {
-            r.reserve0 = reserveA - amountA;
-            r.reserve1 = reserveB - amountB;
+            reserves[token0][token1] = TokenPairReserves(
+                reserveA - amountA,
+                reserveB - amountB
+            ); // SSTORE unique
         } else {
-            r.reserve0 = reserveB - amountB;
-            r.reserve1 = reserveA - amountA;
+            reserves[token0][token1] = TokenPairReserves(
+                reserveB - amountB,
+                reserveA - amountA
+            ); // SSTORE unique
         }
 
         emit LiquidityRemoved(tokenA, tokenB, amountA, amountB, liquidity);
@@ -410,10 +418,10 @@ contract SimpleSwap is ERC20, Ownable {
         address tokenOut = path[1];
 
         (address token0, address token1) = sortTokens(tokenIn, tokenOut);
-        TokenPairReserves storage r = reserves[token0][token1];
+        TokenPairReserves memory pairReserves = reserves[token0][token1]; // SLOAD unique
 
-        uint reserve0 = r.reserve0;
-        uint reserve1 = r.reserve1;
+        uint reserve0 = pairReserves.reserve0;
+        uint reserve1 = pairReserves.reserve1;
 
         (uint reserveIn, uint reserveOut) = tokenIn == token0
             ? (reserve0, reserve1)
@@ -423,21 +431,24 @@ contract SimpleSwap is ERC20, Ownable {
 
         // Calculate amount out
         uint amountOut = _getAmountOut(amountIn, reserveIn, reserveOut);
-        require(amountOut >= amountOutMin, "Insufficient output");
+        require(amountOut >= amountOutMin, "Low output");
 
         // Transfer tokens from user to contract
         IERC20(tokenIn).transferFrom(msg.sender, address(this), amountIn);
-
         // Transfer tokens to user
         IERC20(tokenOut).transfer(to, amountOut);
 
         // Update reserves for the token pair
         if (tokenIn == token0) {
-            r.reserve0 = reserveIn + amountIn;
-            r.reserve1 = reserveOut - amountOut;
+            reserves[token0][token1] = TokenPairReserves(
+                reserveIn + amountIn,
+                reserveOut - amountOut
+            ); // SSTORE unique
         } else {
-            r.reserve0 = reserveOut - amountOut;
-            r.reserve1 = reserveIn + amountIn;
+            reserves[token0][token1] = TokenPairReserves(
+                reserveOut - amountOut,
+                reserveIn + amountIn
+            ); // SSTORE
         }
 
         emit Swap(tokenIn, tokenOut, amountIn, amountOut, to);

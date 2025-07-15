@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -15,7 +15,7 @@
     <!-- Loading overlay displayed during blockchain transactions -->
     <div id="loadingIndicator" class="loading-indicator hidden">
       <div class="spinner"></div>
-      <p>Procesando...</p>
+      <p>Processing...</p>
     </div>
 
     <!-- Toast notification system for user feedback -->
@@ -33,14 +33,14 @@
         <div class="nav-right">
           <div class="price-section">
             <button id="updatePricesBtn" class="price-btn">
-              <i class="fas fa-sync-alt"></i> Actualizar Precios
+              <i class="fas fa-sync-alt"></i> Update Prices
             </button>
             <div class="price-display">
-              <span id="currentPrice">Precio: -</span>
+              <span id="currentPrice">Price: -</span>
             </div>
           </div>
           <button id="connectBtn" class="connect-btn">
-            <i class="fas fa-wallet"></i> Conectar MetaMask
+            <i class="fas fa-wallet"></i> Connect MetaMask
           </button>
         </div>
       </div>
@@ -55,7 +55,7 @@
           <div class="left-column">
             <!-- Token minting section for testing purposes -->
             <div class="card">
-              <h3>Obtener Tokens de Prueba</h3>
+              <h3>Get Test Tokens</h3>
               <div class="button-group">
                 <button id="mintTokenA" class="btn btn-primary">
                   <i class="fas fa-coins"></i> Mint 1000 Token A
@@ -68,18 +68,18 @@
 
             <!-- Token approval section for enabling swaps -->
             <div class="card">
-              <h3>Aprobar Tokens</h3>
+              <h3>Approve Tokens</h3>
               <button id="approveAllBtn" class="btn btn-secondary full-width">
-                <i class="fas fa-check-circle"></i> Aprobar Todos los Tokens
+                <i class="fas fa-check-circle"></i> Approve All Tokens
               </button>
             </div>
 
             <!-- Liquidity provision interface -->
             <div class="card">
-              <h3>Agregar Liquidez</h3>
+              <h3>Add Liquidity</h3>
               <div class="liquidity-inputs">
                 <div class="input-group">
-                  <label>Cantidad Token A:</label>
+                  <label>Token A Amount:</label>
                   <input
                     id="liquidityAmountA"
                     type="number"
@@ -88,7 +88,7 @@
                   />
                 </div>
                 <div class="input-group">
-                  <label>Cantidad Token B:</label>
+                  <label>Token B Amount:</label>
                   <input
                     id="liquidityAmountB"
                     type="number"
@@ -98,7 +98,7 @@
                 </div>
               </div>
               <button id="addLiquidityBtn" class="btn btn-success full-width">
-                <i class="fas fa-plus-circle"></i> Agregar Liquidez
+                <i class="fas fa-plus-circle"></i> Add Liquidity
               </button>
             </div>
           </div>
@@ -106,12 +106,12 @@
           <!-- Central swap interface - main functionality -->
           <div class="center-column">
             <div class="card swap-card">
-              <h2>Intercambiar Tokens</h2>
+              <h2>Swap Tokens</h2>
 
               <!-- Input section for source token and amount -->
               <div class="swap-section">
                 <div class="swap-header">
-                  <label>Desde:</label>
+                  <label>From:</label>
                   <select id="tokenFrom" class="token-select">
                     <option value="tokenA">Token A</option>
                     <option value="tokenB">Token B</option>
@@ -141,7 +141,7 @@
               <!-- Output section for destination token and calculated amount -->
               <div class="swap-section">
                 <div class="swap-header">
-                  <label>Hacia:</label>
+                  <label>To:</label>
                   <select id="tokenTo" class="token-select">
                     <option value="tokenB">Token B</option>
                     <option value="tokenA">Token A</option>
@@ -161,11 +161,11 @@
               <!-- Display current swap rate and estimated output -->
               <div class="swap-info">
                 <div class="info-item">
-                  <span>Precio:</span>
+                  <span>Price:</span>
                   <span id="swapPrice">-</span>
                 </div>
                 <div class="info-item">
-                  <span>Recibirás:</span>
+                  <span>You will receive:</span>
                   <span id="receiveAmount">0</span>
                 </div>
               </div>
@@ -173,14 +173,14 @@
               <!-- Swap execution and approval buttons -->
               <div class="action-buttons">
                 <button id="approveSwapBtn" class="btn btn-warning hidden">
-                  <i class="fas fa-check"></i> Aprobar Token
+                  <i class="fas fa-check"></i> Approve Token
                 </button>
                 <button
                   id="swapBtn"
                   class="btn btn-success full-width"
                   disabled
                 >
-                  <i class="fas fa-exchange-alt"></i> Ejecutar Swap
+                  <i class="fas fa-exchange-alt"></i> Execute Swap
                 </button>
               </div>
             </div>
@@ -191,8 +191,8 @@
             <!-- User wallet information display -->
             <div id="accountInfo" class="account-info hidden">
               <div class="account-card">
-                <h3>Información de Cuenta</h3>
-                <p id="accountAddress">No conectado</p>
+                <h3>Account Information</h3>
+                <p id="accountAddress">Not connected</p>
                 <div class="balances">
                   <div class="balance-item">
                     <span>Balance Token A:</span>
@@ -208,25 +208,25 @@
 
             <!-- Live price feeds and liquidity pool information -->
             <div class="card price-info-card">
-              <h3>Información de Precios y Reservas del Pool</h3>
+              <h3>Pool Prices and Reserves Information</h3>
               <div class="price-info">
                 <div class="price-item">
-                  <span>Precio Token A:</span>
+                  <span>Token A Price:</span>
                   <span id="priceTokenA">-</span>
                 </div>
                 <div class="price-item">
-                  <span>Precio Token B:</span>
+                  <span>Token B Price:</span>
                   <span id="priceTokenB">-</span>
                 </div>
               </div>
               <div class="reserves-info">
-                <h4>Reservas del Pool</h4>
+                <h4>Pool Reserves</h4>
                 <div class="reserve-item">
-                  <span>Reserva Token A:</span>
+                  <span>Token A Reserve:</span>
                   <span id="reserveTokenA">0</span>
                 </div>
                 <div class="reserve-item">
-                  <span>Reserva Token B:</span>
+                  <span>Token B Reserve:</span>
                   <span id="reserveTokenB">0</span>
                 </div>
               </div>

@@ -1,8 +1,8 @@
 // ===== CONTRACT CONFIGURATION =====
 const CONTRACT_ADDRESSES = {
-  SIMPLE_SWAP: "0x8A45C0c1c4288d42fc2D54F05e5F13c39D306aB2",
-  TOKEN_A: "0x58c5E41EC849CF3F4AC003E745fDCa5d89A257e6",
-  TOKEN_B: "0x11FC5efe55630D1796Cbc9bc7e15A7Abaffad98A",
+  SIMPLE_SWAP: "0xD18BB389EF67b63311018E1A1C82f15Cf4b6Be2C",
+  TOKEN_A: "0xcA558a17b881b6BF2BFAE80CfF4b53C8Db3cdf03",
+  TOKEN_B: "0xF13995D4Dd7f5973681E568AF31E51E52bA6dcbB",
 };
 
 // Simplified ABIs - only the functions we need for the DApp
@@ -259,7 +259,7 @@ function closeNotification() {
 }
 
 // ===== WALLET CONNECTION FUNCTIONS =====
-async function conectar() {
+async function connect() {
   console.log("Initiating wallet connection...");
 
   if (typeof window.ethereum !== "undefined") {
@@ -314,8 +314,8 @@ async function conectar() {
       console.log("Contracts initialized");
 
       // Update balances and prices
-      await actualizarBalances();
-      await actualizarPrecios();
+      await updateBalances();
+      await updatePrices();
 
       hideLoading();
       showNotification("Wallet connected successfully", "success");
@@ -330,7 +330,7 @@ async function conectar() {
   }
 }
 
-function desconectar() {
+function disconnect() {
   console.log("Disconnecting wallet...");
 
   // Reset global variables
@@ -360,7 +360,7 @@ function desconectar() {
 }
 
 // ===== BALANCE FUNCTIONS =====
-async function actualizarBalances() {
+async function updateBalances() {
   if (!userAddress || !contracts.tokenA || !contracts.tokenB) {
     console.log("Cannot update balances - missing data");
     return;
@@ -394,7 +394,7 @@ async function actualizarBalances() {
 }
 
 // ===== SWAP FUNCTIONS =====
-async function calcularSwap() {
+async function calculateSwap() {
   // Check if required elements and values are available
   if (
     !contracts.simpleSwap ||
@@ -416,7 +416,7 @@ async function calcularSwap() {
       CONTRACT_ADDRESSES.TOKEN_B
     );
 
-    // Determine swap direction and reserves
+    // Determine swap address and reserves
     const isAtoB = elements.tokenFrom.value === "tokenA";
     const reserveIn = isAtoB ? reserveA : reserveB;
     const reserveOut = isAtoB ? reserveB : reserveA;
@@ -460,7 +460,7 @@ async function calcularSwap() {
   }
 }
 
-async function verificarAprobacion() {
+async function checkApproval() {
   // Check if required data is available
   if (
     !userAddress ||
@@ -506,7 +506,7 @@ async function verificarAprobacion() {
   }
 }
 
-async function aprobarToken() {
+async function approveToken() {
   if (!userAddress || !elements.amountFrom || !elements.amountFrom.value)
     return;
 
@@ -528,7 +528,7 @@ async function aprobarToken() {
     await tx.wait();
 
     // Update approval status
-    await verificarAprobacion();
+    await checkApproval();
     hideLoading();
     showNotification("Token approved successfully", "success");
   } catch (error) {
@@ -538,7 +538,7 @@ async function aprobarToken() {
   }
 }
 
-async function ejecutarSwap() {
+async function executeSwap() {
   if (!userAddress || !elements.amountFrom || !elements.amountFrom.value)
     return;
 
@@ -577,8 +577,8 @@ async function ejecutarSwap() {
     if (elements.receiveAmount) elements.receiveAmount.textContent = "0";
 
     // Update balances and prices
-    await actualizarBalances();
-    await actualizarPrecios();
+    await updateBalances();
+    await updatePrices();
 
     hideLoading();
     showNotification("Swap executed successfully", "success");
@@ -589,7 +589,7 @@ async function ejecutarSwap() {
   }
 }
 
-function intercambiarDireccion() {
+function swapAddress() {
   if (!elements.tokenFrom || !elements.tokenTo) return;
 
   // Swap token selection
@@ -604,12 +604,12 @@ function intercambiarDireccion() {
   if (elements.amountTo) elements.amountTo.value = "";
   if (elements.receiveAmount) elements.receiveAmount.textContent = "0";
 
-  // Update approval status for new token direction
-  verificarAprobacion();
+  // Update approval status for new token address
+  checkApproval();
 }
 
 // ===== PRICE FUNCTIONS =====
-async function actualizarPrecios() {
+async function updatePrices() {
   if (!contracts.simpleSwap) return;
 
   try {
@@ -754,7 +754,7 @@ async function mintTokenB() {
 }
 
 // ===== TOKEN APPROVAL FUNCTION =====
-async function aprobarTodosTokens() {
+async function approveAllTokens() {
   if (!userAddress || !contracts.tokenA || !contracts.tokenB) {
     showNotification("Connect your wallet first", "error");
     return;
@@ -791,7 +791,7 @@ async function aprobarTodosTokens() {
     showNotification("Tokens approved successfully!", "success");
 
     // Update approval status
-    await verificarAprobacion();
+    await checkApproval();
   } catch (error) {
     console.error("Error approving tokens:", error);
     showNotification(`Error approving tokens: ${error.message}`, "error");
@@ -806,7 +806,7 @@ async function aprobarTodosTokens() {
 }
 
 // ===== LIQUIDITY FUNCTIONS =====
-async function agregarLiquidez() {
+async function addLiquidity() {
   if (!userAddress || !contracts.simpleSwap) {
     showNotification("Connect your wallet first", "error");
     return;
@@ -870,8 +870,8 @@ async function agregarLiquidez() {
     if (elements.liquidityAmountB) elements.liquidityAmountB.value = "";
 
     // Update balances and prices
-    await actualizarBalances();
-    await actualizarPrecios();
+    await updateBalances();
+    await updatePrices();
   } catch (error) {
     console.error("Error adding liquidity:", error);
     showNotification(`Error adding liquidity: ${error.message}`, "error");
@@ -885,20 +885,17 @@ async function agregarLiquidez() {
   }
 }
 
-// ===== NAVIGATION FUNCTIONS =====
-// Navigation function removed: mostrarTab (no longer used)
-
 // ===== EVENT HANDLERS =====
-function configurarEventos() {
+function setupEvents() {
   console.log("Setting up event listeners...");
 
   // Wallet connection button
   if (elements.connectBtn) {
     elements.connectBtn.addEventListener("click", () => {
       if (userAddress) {
-        desconectar();
+        disconnect();
       } else {
-        conectar();
+        connect();
       }
     });
   }
@@ -906,31 +903,31 @@ function configurarEventos() {
   // Swap-related events
   if (elements.amountFrom) {
     elements.amountFrom.addEventListener("input", () => {
-      calcularSwap();
-      verificarAprobacion();
+      calculateSwap();
+      checkApproval();
     });
   }
 
   if (elements.tokenFrom) {
     elements.tokenFrom.addEventListener("change", () => {
-      calcularSwap();
-      verificarAprobacion();
+      calculateSwap();
+      checkApproval();
     });
   }
 
   if (elements.tokenTo) {
     elements.tokenTo.addEventListener("change", () => {
-      calcularSwap();
-      verificarAprobacion();
+      calculateSwap();
+      checkApproval();
     });
   }
 
   if (elements.approveSwapBtn) {
-    elements.approveSwapBtn.addEventListener("click", aprobarToken);
+    elements.approveSwapBtn.addEventListener("click", approveToken);
   }
 
   if (elements.swapBtn) {
-    elements.swapBtn.addEventListener("click", ejecutarSwap);
+    elements.swapBtn.addEventListener("click", executeSwap);
   }
 
   // Token minting events
@@ -944,17 +941,17 @@ function configurarEventos() {
 
   // Token approval events
   if (elements.approveAllBtn) {
-    elements.approveAllBtn.addEventListener("click", aprobarTodosTokens);
+    elements.approveAllBtn.addEventListener("click", approveAllTokens);
   }
 
   // Price update events
   if (elements.updatePricesBtn) {
-    elements.updatePricesBtn.addEventListener("click", actualizarPrecios);
+    elements.updatePricesBtn.addEventListener("click", updatePrices);
   }
 
   // Liquidity events
   if (elements.addLiquidityBtn) {
-    elements.addLiquidityBtn.addEventListener("click", agregarLiquidez);
+    elements.addLiquidityBtn.addEventListener("click", addLiquidity);
   }
 
   // MetaMask events
@@ -962,9 +959,9 @@ function configurarEventos() {
     window.ethereum.on("accountsChanged", (accounts) => {
       console.log("Accounts changed:", accounts);
       if (accounts.length === 0) {
-        desconectar();
+        disconnect();
       } else {
-        conectar();
+        connect();
       }
     });
 
@@ -978,7 +975,7 @@ function configurarEventos() {
 }
 
 // ===== INITIALIZATION =====
-function inicializar() {
+function initialize() {
   console.log("Initializing application...");
 
   // Verify ethers.js is loaded
@@ -988,15 +985,15 @@ function inicializar() {
     return;
   }
 
-  configurarEventos();
+  setupEvents();
 
   console.log("Application initialized successfully");
 }
 
 // Initialize when DOM is ready
-document.addEventListener("DOMContentLoaded", inicializar);
+document.addEventListener("DOMContentLoaded", initialize);
 
 // Expose global functions for HTML usage
-window.swapTokenDirection = intercambiarDireccion;
-window.updatePricesAndReserves = actualizarPrecios;
+window.swapTokenAddress = swapAddress;
+window.updatePricesAndReserves = updatePrices;
 window.closeNotification = closeNotification;
