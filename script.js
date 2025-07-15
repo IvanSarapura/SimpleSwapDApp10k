@@ -112,6 +112,13 @@ const CONTRACT_ABIS = {
       stateMutability: "nonpayable",
       type: "function",
     },
+    {
+      inputs: [],
+      name: "totalSupply",
+      outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
+      stateMutability: "view",
+      type: "function",
+    },
   ],
 
   TOKEN_A: [
