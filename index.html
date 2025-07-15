@@ -301,6 +301,37 @@
                 </div>
               </div>
             </div>
+
+            <!-- Contract Activity Card -->
+            <div class="card contract-activity-card">
+              <h3>Contract Activity</h3>
+              <div class="activity-info">
+                <div class="activity-item">
+                  <span>Unique Wallets:</span>
+                  <span id="uniqueWallets">0</span>
+                </div>
+                <div class="activity-item">
+                  <span>Total Interactions:</span>
+                  <span id="totalInteractions">0</span>
+                </div>
+                <div class="activity-item">
+                  <span>Last Interaction:</span>
+                  <span id="lastInteraction">None</span>
+                </div>
+              </div>
+              <div class="recent-activity">
+                <h4>Recent Activity</h4>
+                <div id="recentActivityList" class="recent-list">
+                  <div class="no-activity">No activity yet</div>
+                </div>
+              </div>
+              <button
+                id="clearActivityBtn"
+                class="btn btn-secondary full-width"
+              >
+                <i class="fas fa-trash"></i> Clear Activity
+              </button>
+            </div>
           </div>
         </div>
       </div>

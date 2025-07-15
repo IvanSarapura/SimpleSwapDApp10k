@@ -208,6 +208,14 @@ let signer;
 let userAddress;
 let contracts = {};
 
+// Contract activity tracking
+let contractActivity = {
+  uniqueWallets: new Set(),
+  totalInteractions: 0,
+  recentActivities: [],
+  eventListeners: [],
+};
+
 // ===== DOM ELEMENTS =====
 const elements = {
   connectBtn: document.getElementById("connectBtn"),
@@ -258,6 +266,13 @@ const elements = {
   userPoolShare: document.getElementById("userPoolShare"),
   poolRatio: document.getElementById("poolRatio"),
   refreshStatsBtn: document.getElementById("refreshStatsBtn"),
+
+  // Contract Activity elements
+  uniqueWallets: document.getElementById("uniqueWallets"),
+  totalInteractions: document.getElementById("totalInteractions"),
+  lastInteraction: document.getElementById("lastInteraction"),
+  recentActivityList: document.getElementById("recentActivityList"),
+  clearActivityBtn: document.getElementById("clearActivityBtn"),
 
   // UI feedback elements
   loadingIndicator: document.getElementById("loadingIndicator"),
@@ -358,6 +373,9 @@ async function connect() {
       await updatePrices();
       await updatePoolStatistics();
 
+      // Initialize contract event listeners
+      initializeContractEventListeners();
+
       hideLoading();
       showNotification("Wallet connected successfully", "success");
     } catch (error) {
@@ -402,6 +420,9 @@ function disconnect() {
   if (elements.totalLPTokens) elements.totalLPTokens.textContent = "0";
   if (elements.userPoolShare) elements.userPoolShare.textContent = "0%";
   if (elements.poolRatio) elements.poolRatio.textContent = "1:1";
+
+  // Clear contract activity
+  clearContractActivity();
 
   showNotification("Wallet disconnected", "info");
 }
@@ -636,6 +657,14 @@ async function executeSwap() {
 
     await tx.wait();
 
+    // Add to contract activity
+    addContractActivity("Swap", userAddress, {
+      tokenIn: tokenInAddress,
+      tokenOut: tokenOutAddress,
+      amountIn: elements.amountFrom.value,
+      amountOut: elements.amountTo.value,
+    });
+
     // Clear input fields
     if (elements.amountFrom) elements.amountFrom.value = "";
     if (elements.amountTo) elements.amountTo.value = "";
@@ -738,6 +767,200 @@ async function updatePrices() {
 async function updateAllData() {
   await updatePrices();
   await updatePoolStatistics();
+}
+
+// ===== CONTRACT ACTIVITY FUNCTIONS =====
+
+// Initialize contract event listeners
+function initializeContractEventListeners() {
+  if (!contracts.simpleSwap) {
+    console.log("SimpleSwap contract not initialized");
+    return;
+  }
+
+  console.log("Initializing contract event listeners...");
+
+  // Clear existing listeners
+  contractActivity.eventListeners.forEach((listener) => {
+    if (listener.removeListener) {
+      listener.removeListener();
+    }
+  });
+  contractActivity.eventListeners = [];
+
+  // Listen for LiquidityAdded events
+  const liquidityAddedListener = contracts.simpleSwap.on(
+    "LiquidityAdded",
+    (tokenA, tokenB, amountA, amountB, liquidity, event) => {
+      const walletAddress = event.args
+        ? event.args.to || event.transactionHash
+        : "Unknown";
+      addContractActivity("Add Liquidity", walletAddress, {
+        tokenA: tokenA,
+        tokenB: tokenB,
+        amountA: ethers.utils.formatEther(amountA),
+        amountB: ethers.utils.formatEther(amountB),
+        liquidity: ethers.utils.formatEther(liquidity),
+      });
+    }
+  );
+
+  // Listen for LiquidityRemoved events
+  const liquidityRemovedListener = contracts.simpleSwap.on(
+    "LiquidityRemoved",
+    (tokenA, tokenB, amountA, amountB, liquidity, event) => {
+      const walletAddress = event.args
+        ? event.args.to || event.transactionHash
+        : "Unknown";
+      addContractActivity("Remove Liquidity", walletAddress, {
+        tokenA: tokenA,
+        tokenB: tokenB,
+        amountA: ethers.utils.formatEther(amountA),
+        amountB: ethers.utils.formatEther(amountB),
+        liquidity: ethers.utils.formatEther(liquidity),
+      });
+    }
+  );
+
+  // Listen for Swap events
+  const swapListener = contracts.simpleSwap.on(
+    "Swap",
+    (tokenIn, tokenOut, amountIn, amountOut, to, event) => {
+      addContractActivity("Swap", to, {
+        tokenIn: tokenIn,
+        tokenOut: tokenOut,
+        amountIn: ethers.utils.formatEther(amountIn),
+        amountOut: ethers.utils.formatEther(amountOut),
+      });
+    }
+  );
+
+  // Store listeners for cleanup
+  contractActivity.eventListeners.push(
+    liquidityAddedListener,
+    liquidityRemovedListener,
+    swapListener
+  );
+
+  console.log("Contract event listeners initialized successfully");
+}
+
+// Initialize contract activity UI
+function initializeContractActivityUI() {
+  // Initialize with empty state
+  updateContractActivityUI();
+  console.log("Contract activity UI initialized");
+}
+
+// Add new contract activity
+function addContractActivity(activityType, walletAddress, details) {
+  console.log(`New contract activity: ${activityType} from ${walletAddress}`);
+
+  // Add wallet to unique set
+  contractActivity.uniqueWallets.add(walletAddress);
+
+  // Increment total interactions
+  contractActivity.totalInteractions++;
+
+  // Add to recent activities (keep last 10)
+  const activityEntry = {
+    type: activityType,
+    wallet: walletAddress,
+    timestamp: new Date(),
+    details: details,
+  };
+
+  contractActivity.recentActivities.unshift(activityEntry);
+  if (contractActivity.recentActivities.length > 10) {
+    contractActivity.recentActivities.pop();
+  }
+
+  // Update UI
+  updateContractActivityUI();
+}
+
+// Update contract activity UI
+function updateContractActivityUI() {
+  try {
+    // Update unique wallets count
+    if (elements.uniqueWallets) {
+      elements.uniqueWallets.textContent = contractActivity.uniqueWallets.size;
+    }
+
+    // Update total interactions
+    if (elements.totalInteractions) {
+      elements.totalInteractions.textContent =
+        contractActivity.totalInteractions;
+    }
+
+    // Update last interaction
+    if (elements.lastInteraction) {
+      if (contractActivity.recentActivities.length > 0) {
+        const lastActivity = contractActivity.recentActivities[0];
+        const shortAddress = `${lastActivity.wallet.slice(
+          0,
+          6
+        )}...${lastActivity.wallet.slice(-4)}`;
+        elements.lastInteraction.textContent = shortAddress;
+      } else {
+        elements.lastInteraction.textContent = "None";
+      }
+    }
+
+    // Update recent activities list
+    if (elements.recentActivityList) {
+      if (contractActivity.recentActivities.length === 0) {
+        elements.recentActivityList.innerHTML =
+          '<div class="no-activity">No activity yet</div>';
+      } else {
+        const activitiesHTML = contractActivity.recentActivities
+          .map((activity) => {
+            const shortAddress = `${activity.wallet.slice(
+              0,
+              6
+            )}...${activity.wallet.slice(-4)}`;
+            const timeStr = activity.timestamp.toLocaleTimeString();
+
+            return `
+            <div class="activity-entry">
+              <div class="activity-type">${activity.type}</div>
+              <div class="activity-address">${shortAddress}</div>
+              <div class="activity-time">${timeStr}</div>
+            </div>
+          `;
+          })
+          .join("");
+
+        elements.recentActivityList.innerHTML = activitiesHTML;
+      }
+    }
+
+    console.log("Contract activity UI updated successfully");
+  } catch (error) {
+    console.error("Error updating contract activity UI:", error);
+  }
+}
+
+// Clear contract activity
+function clearContractActivity() {
+  contractActivity.uniqueWallets.clear();
+  contractActivity.totalInteractions = 0;
+  contractActivity.recentActivities = [];
+
+  // Clear event listeners
+  contractActivity.eventListeners.forEach((listener) => {
+    if (listener.removeListener) {
+      listener.removeListener();
+    }
+  });
+  contractActivity.eventListeners = [];
+
+  updateContractActivityUI();
+
+  // Only show notification if connected
+  if (userAddress) {
+    showNotification("Contract activity cleared", "info");
+  }
 }
 
 // ===== TOKEN MINTING FUNCTIONS =====
@@ -937,6 +1160,14 @@ async function addLiquidity() {
 
     showNotification("Liquidity added successfully!", "success");
 
+    // Add to contract activity
+    addContractActivity("Add Liquidity", userAddress, {
+      tokenA: CONTRACT_ADDRESSES.TOKEN_A,
+      tokenB: CONTRACT_ADDRESSES.TOKEN_B,
+      amountA: amountA,
+      amountB: amountB,
+    });
+
     // Clear input fields
     if (elements.liquidityAmountA) elements.liquidityAmountA.value = "";
     if (elements.liquidityAmountB) elements.liquidityAmountB.value = "";
@@ -1027,6 +1258,13 @@ async function removeLiquidity() {
     await tx.wait();
 
     showNotification("Liquidity removed successfully!", "success");
+
+    // Add to contract activity
+    addContractActivity("Remove Liquidity", userAddress, {
+      tokenA: CONTRACT_ADDRESSES.TOKEN_A,
+      tokenB: CONTRACT_ADDRESSES.TOKEN_B,
+      liquidity: liquidityAmount,
+    });
 
     // Clear input field
     if (elements.removeLiquidityAmount)
@@ -1270,6 +1508,11 @@ function setupEvents() {
     elements.refreshStatsBtn.addEventListener("click", updatePoolStatistics);
   }
 
+  // Contract activity events
+  if (elements.clearActivityBtn) {
+    elements.clearActivityBtn.addEventListener("click", clearContractActivity);
+  }
+
   // MetaMask events
   if (window.ethereum) {
     window.ethereum.on("accountsChanged", (accounts) => {
@@ -1302,6 +1545,9 @@ function initialize() {
   }
 
   setupEvents();
+
+  // Initialize contract activity UI
+  initializeContractActivityUI();
 
   console.log("Application initialized successfully");
 }
