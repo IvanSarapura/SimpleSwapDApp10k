@@ -24,6 +24,27 @@ A simple decentralized exchange (DEX) implemented in Solidity that allows the ex
 
 ---
 
+## Project Overview
+
+SimpleSwap is a decentralized exchange (DEX) implementation built on Ethereum that provides:
+
+- **Automated Market Maker (AMM)** functionality using constant product formula
+- **Liquidity Provision** with LP token rewards
+- **Token Swapping** with real-time price calculations
+- **ERC20 Token Management** with minting capabilities
+- **Modern Web3 Frontend** with MetaMask integration
+
+### Key Features
+
+- **Constant Product Formula**: Implements `x * y = k` for price discovery
+- **LP Token System**: Mint/burn LP tokens for liquidity providers
+- **Slippage Protection**: Minimum amount guarantees for all operations
+- **Deadline Protection**: Transaction expiration timestamps
+- **Token Sorting**: Consistent token pair ordering
+- **Comprehensive Testing**: function coverage with edge cases and access control
+
+---
+
 ## Deployment Instructions
 
 ### Clone repository
@@ -50,27 +71,6 @@ npx hardhat compile
 npx hardhat test
 npx hardhat coverage
 ```
-
----
-
-## Project Overview
-
-SimpleSwap is a decentralized exchange (DEX) implementation built on Ethereum that provides:
-
-- **Automated Market Maker (AMM)** functionality using constant product formula
-- **Liquidity Provision** with LP token rewards
-- **Token Swapping** with real-time price calculations
-- **ERC20 Token Management** with minting capabilities
-- **Modern Web3 Frontend** with MetaMask integration
-
-### Key Features
-
-- **Constant Product Formula**: Implements `x * y = k` for price discovery
-- **LP Token System**: Mint/burn LP tokens for liquidity providers
-- **Slippage Protection**: Minimum amount guarantees for all operations
-- **Deadline Protection**: Transaction expiration timestamps
-- **Token Sorting**: Consistent token pair ordering
-- **Comprehensive Testing**: function coverage with edge cases and access control
 
 ---
 
