@@ -119,6 +119,113 @@ const CONTRACT_ABIS = {
       stateMutability: "view",
       type: "function",
     },
+    // Events
+    {
+      anonymous: false,
+      inputs: [
+        {
+          indexed: true,
+          internalType: "address",
+          name: "tokenA",
+          type: "address",
+        },
+        {
+          indexed: true,
+          internalType: "address",
+          name: "tokenB",
+          type: "address",
+        },
+        {
+          indexed: false,
+          internalType: "uint256",
+          name: "amountA",
+          type: "uint256",
+        },
+        {
+          indexed: false,
+          internalType: "uint256",
+          name: "amountB",
+          type: "uint256",
+        },
+        {
+          indexed: false,
+          internalType: "uint256",
+          name: "liquidity",
+          type: "uint256",
+        },
+      ],
+      name: "LiquidityAdded",
+      type: "event",
+    },
+    {
+      anonymous: false,
+      inputs: [
+        {
+          indexed: true,
+          internalType: "address",
+          name: "tokenA",
+          type: "address",
+        },
+        {
+          indexed: true,
+          internalType: "address",
+          name: "tokenB",
+          type: "address",
+        },
+        {
+          indexed: false,
+          internalType: "uint256",
+          name: "amountA",
+          type: "uint256",
+        },
+        {
+          indexed: false,
+          internalType: "uint256",
+          name: "amountB",
+          type: "uint256",
+        },
+        {
+          indexed: false,
+          internalType: "uint256",
+          name: "liquidity",
+          type: "uint256",
+        },
+      ],
+      name: "LiquidityRemoved",
+      type: "event",
+    },
+    {
+      anonymous: false,
+      inputs: [
+        {
+          indexed: true,
+          internalType: "address",
+          name: "tokenIn",
+          type: "address",
+        },
+        {
+          indexed: true,
+          internalType: "address",
+          name: "tokenOut",
+          type: "address",
+        },
+        {
+          indexed: false,
+          internalType: "uint256",
+          name: "amountIn",
+          type: "uint256",
+        },
+        {
+          indexed: false,
+          internalType: "uint256",
+          name: "amountOut",
+          type: "uint256",
+        },
+        { indexed: true, internalType: "address", name: "to", type: "address" },
+      ],
+      name: "Swap",
+      type: "event",
+    },
   ],
 
   TOKEN_A: [
