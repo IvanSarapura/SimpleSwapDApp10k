@@ -842,46 +842,6 @@ async function addLiquidity() {
     const amountADesired = ethers.utils.parseEther(amountA);
     const amountBDesired = ethers.utils.parseEther(amountB);
 
-    // Check if user has enough tokens
-    const balanceA = await contracts.tokenA.balanceOf(userAddress);
-    const balanceB = await contracts.tokenB.balanceOf(userAddress);
-
-    if (balanceA.lt(amountADesired)) {
-      showNotification(
-        "Insufficient Token A balance. Please mint more tokens.",
-        "error"
-      );
-      return;
-    }
-
-    if (balanceB.lt(amountBDesired)) {
-      showNotification(
-        "Insufficient Token B balance. Please mint more tokens.",
-        "error"
-      );
-      return;
-    }
-
-    // Check if user has approved enough tokens
-    const allowanceA = await contracts.tokenA.allowance(
-      userAddress,
-      CONTRACT_ADDRESSES.SIMPLE_SWAP
-    );
-    const allowanceB = await contracts.tokenB.allowance(
-      userAddress,
-      CONTRACT_ADDRESSES.SIMPLE_SWAP
-    );
-
-    if (allowanceA.lt(amountADesired)) {
-      showNotification("Approve All Tokens", "error");
-      return;
-    }
-
-    if (allowanceB.lt(amountBDesired)) {
-      showNotification("Approve All Tokens", "error");
-      return;
-    }
-
     // Set slippage tolerance (5%)
     const amountAMin = amountADesired.mul(95).div(100);
     const amountBMin = amountBDesired.mul(95).div(100);
@@ -914,60 +874,6 @@ async function addLiquidity() {
     await updatePrices();
   } catch (error) {
     console.error("Error adding liquidity:", error);
-
-    // Detecting specific errors
-    let errorMessage = "Error adding liquidity";
-
-    if (error.code === "UNPREDICTABLE_GAS_LIMIT") {
-      // Checking if it's an approval problem
-      try {
-        const amountADesired = ethers.utils.parseEther(amountA);
-        const amountBDesired = ethers.utils.parseEther(amountB);
-
-        const allowanceA = await contracts.tokenA.allowance(
-          userAddress,
-          CONTRACT_ADDRESSES.SIMPLE_SWAP
-        );
-        const allowanceB = await contracts.tokenB.allowance(
-          userAddress,
-          CONTRACT_ADDRESSES.SIMPLE_SWAP
-        );
-
-        if (allowanceA.lt(amountADesired) || allowanceB.lt(amountBDesired)) {
-          errorMessage =
-            "Please approve tokens first using 'Approve All Tokens' button";
-        } else {
-          // Checking balances
-          const balanceA = await contracts.tokenA.balanceOf(userAddress);
-          const balanceB = await contracts.tokenB.balanceOf(userAddress);
-
-          if (balanceA.lt(amountADesired)) {
-            errorMessage =
-              "Insufficient Token A balance. Please mint more tokens.";
-          } else if (balanceB.lt(amountBDesired)) {
-            errorMessage =
-              "Insufficient Token B balance. Please mint more tokens.";
-          } else {
-            errorMessage =
-              "Transaction failed. Please try again or check network conditions.";
-          }
-        }
-      } catch (checkError) {
-        errorMessage =
-          "Please approve tokens first using 'Approve All Tokens' button";
-      }
-    } else if (error.message.includes("execution reverted")) {
-      // General case for execution reverted errors
-      errorMessage =
-        "Please approve tokens first using 'Approve All Tokens' button";
-    } else if (error.message.includes("insufficient")) {
-      errorMessage = "Insufficient token balance. Please mint more tokens.";
-    } else if (error.message.includes("denied")) {
-      errorMessage = "Transaction rejected by user";
-    } else {
-      errorMessage = `Error: ${error.message}`;
-    }
-
     showNotification(`Error adding liquidity: ${error.message}`, "error");
   } finally {
     hideLoading();
