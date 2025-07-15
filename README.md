@@ -2,13 +2,12 @@
 
 A simple decentralized exchange (DEX) implemented in Solidity that allows the exchange of ERC20 tokens with liquidity provision.
 
-| **Component**              | **Links**                                                                                                                     |
-| -------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
-| **Live Frontend**          | [https://simpleswap-dex-dapp.vercel.app/](https://simpleswap-dex-dapp.vercel.app/)                                            |
-| **SimpleSwap Contract**    | [0xD18BB389EF67b63311018E1A1C82f15Cf4b6Be2C](https://sepolia.etherscan.io/address/0xD18BB389EF67b63311018E1A1C82f15Cf4b6Be2C) |
-| **Token A Contract**       | [0xcA558a17b881b6BF2BFAE80CfF4b53C8Db3cdf03](https://sepolia.etherscan.io/address/0xcA558a17b881b6BF2BFAE80CfF4b53C8Db3cdf03) |
-| **Token B Contract**       | [0xF13995D4Dd7f5973681E568AF31E51E52bA6dcbB](https://sepolia.etherscan.io/address/0xF13995D4Dd7f5973681E568AF31E51E52bA6dcbB) |
-| **Etherscan Verification** | [Verified Contracts](https://sepolia.etherscan.io/)                                                                           |
+| **Component**           | **Links**                                                                                                                     |
+| ----------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| **Live Frontend**       | [https://simpleswap-dex-dapp.vercel.app/](https://simpleswap-dex-dapp.vercel.app/)                                            |
+| **SimpleSwap Contract** | [0xD18BB389EF67b63311018E1A1C82f15Cf4b6Be2C](https://sepolia.etherscan.io/address/0xD18BB389EF67b63311018E1A1C82f15Cf4b6Be2C) |
+| **Token A Contract**    | [0xcA558a17b881b6BF2BFAE80CfF4b53C8Db3cdf03](https://sepolia.etherscan.io/address/0xcA558a17b881b6BF2BFAE80CfF4b53C8Db3cdf03) |
+| **Token B Contract**    | [0xF13995D4Dd7f5973681E568AF31E51E52bA6dcbB](https://sepolia.etherscan.io/address/0xF13995D4Dd7f5973681E568AF31E51E52bA6dcbB) |
 
 ---
 
