@@ -1064,13 +1064,13 @@ async function calculateRemoveLiquidityPreview() {
     if (elements.previewAmountA) {
       elements.previewAmountA.textContent = parseFloat(
         ethers.utils.formatEther(expectedAmountA)
-      ).toFixed(4);
+      ).toFixed(2);
     }
 
     if (elements.previewAmountB) {
       elements.previewAmountB.textContent = parseFloat(
         ethers.utils.formatEther(expectedAmountB)
-      ).toFixed(4);
+      ).toFixed(2);
     }
   } catch (error) {
     console.error("Error calculating remove liquidity preview:", error);
