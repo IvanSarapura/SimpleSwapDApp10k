@@ -252,6 +252,13 @@ const elements = {
   previewAmountA: document.getElementById("previewAmountA"),
   previewAmountB: document.getElementById("previewAmountB"),
 
+  // Pool Statistics elements
+  poolTVL: document.getElementById("poolTVL"),
+  totalLPTokens: document.getElementById("totalLPTokens"),
+  userPoolShare: document.getElementById("userPoolShare"),
+  poolRatio: document.getElementById("poolRatio"),
+  refreshStatsBtn: document.getElementById("refreshStatsBtn"),
+
   // UI feedback elements
   loadingIndicator: document.getElementById("loadingIndicator"),
   notification: document.getElementById("notification"),
@@ -349,6 +356,7 @@ async function connect() {
       // Update balances and prices
       await updateBalances();
       await updatePrices();
+      await updatePoolStatistics();
 
       hideLoading();
       showNotification("Wallet connected successfully", "success");
@@ -388,6 +396,12 @@ function disconnect() {
   // Clear balance displays
   if (elements.balanceTokenA) elements.balanceTokenA.textContent = "0";
   if (elements.balanceTokenB) elements.balanceTokenB.textContent = "0";
+
+  // Clear pool statistics
+  if (elements.poolTVL) elements.poolTVL.textContent = "$0.00";
+  if (elements.totalLPTokens) elements.totalLPTokens.textContent = "0";
+  if (elements.userPoolShare) elements.userPoolShare.textContent = "0%";
+  if (elements.poolRatio) elements.poolRatio.textContent = "1:1";
 
   showNotification("Wallet disconnected", "info");
 }
@@ -630,6 +644,7 @@ async function executeSwap() {
     // Update balances and prices
     await updateBalances();
     await updatePrices();
+    await updatePoolStatistics();
 
     hideLoading();
     showNotification("Swap executed successfully", "success");
@@ -717,6 +732,12 @@ async function updatePrices() {
   } catch (error) {
     console.error("Error updating prices:", error);
   }
+}
+
+// Wrapper function to update all data
+async function updateAllData() {
+  await updatePrices();
+  await updatePoolStatistics();
 }
 
 // ===== TOKEN MINTING FUNCTIONS =====
@@ -923,6 +944,7 @@ async function addLiquidity() {
     // Update balances and prices
     await updateBalances();
     await updatePrices();
+    await updatePoolStatistics();
   } catch (error) {
     console.error("Error adding liquidity:", error);
     showNotification(`Error adding liquidity: ${error.message}`, "error");
@@ -1013,6 +1035,7 @@ async function removeLiquidity() {
     // Update balances and prices
     await updateBalances();
     await updatePrices();
+    await updatePoolStatistics();
     await calculateRemoveLiquidityPreview();
   } catch (error) {
     console.error("Error removing liquidity:", error);
@@ -1077,6 +1100,90 @@ async function calculateRemoveLiquidityPreview() {
   }
 }
 
+// ===== POOL STATISTICS FUNCTIONS =====
+async function updatePoolStatistics() {
+  if (!contracts.simpleSwap || !userAddress) {
+    // Clear displays if not connected
+    if (elements.poolTVL) elements.poolTVL.textContent = "$0.00";
+    if (elements.totalLPTokens) elements.totalLPTokens.textContent = "0";
+    if (elements.userPoolShare) elements.userPoolShare.textContent = "0%";
+    if (elements.poolRatio) elements.poolRatio.textContent = "1:1";
+    return;
+  }
+
+  try {
+    console.log("Updating pool statistics...");
+
+    // Get current reserves
+    const [reserveA, reserveB] = await contracts.simpleSwap.getReserves(
+      CONTRACT_ADDRESSES.TOKEN_A,
+      CONTRACT_ADDRESSES.TOKEN_B
+    );
+
+    // Get total supply of LP tokens
+    const totalSupply = await contracts.simpleSwap.totalSupply();
+
+    // Get user's LP token balance
+    const userLPBalance = await contracts.simpleSwap.balanceOf(userAddress);
+
+    // Calculate TVL (Total Value Locked)
+    // For simplicity, we'll calculate as sum of reserves (assuming 1:1 price ratio)
+    const reserveAFormatted = parseFloat(ethers.utils.formatEther(reserveA));
+    const reserveBFormatted = parseFloat(ethers.utils.formatEther(reserveB));
+    const tvl = reserveAFormatted + reserveBFormatted;
+
+    // Calculate user's pool share percentage
+    let userPoolSharePercentage = 0;
+    if (!totalSupply.isZero()) {
+      const userLPFormatted = parseFloat(
+        ethers.utils.formatEther(userLPBalance)
+      );
+      const totalSupplyFormatted = parseFloat(
+        ethers.utils.formatEther(totalSupply)
+      );
+      userPoolSharePercentage = (userLPFormatted / totalSupplyFormatted) * 100;
+    }
+
+    // Calculate pool ratio (Token A : Token B)
+    let poolRatioText = "1:1";
+    if (reserveAFormatted > 0 && reserveBFormatted > 0) {
+      const ratioA = reserveAFormatted / reserveBFormatted;
+      const ratioB = reserveBFormatted / reserveAFormatted;
+
+      if (ratioA >= 1) {
+        poolRatioText = `${ratioA.toFixed(2)}:1`;
+      } else {
+        poolRatioText = `1:${ratioB.toFixed(2)}`;
+      }
+    }
+
+    // Update UI elements
+    if (elements.poolTVL) {
+      elements.poolTVL.textContent = `$${tvl.toFixed(2)}`;
+    }
+
+    if (elements.totalLPTokens) {
+      elements.totalLPTokens.textContent = parseFloat(
+        ethers.utils.formatEther(totalSupply)
+      ).toFixed(4);
+    }
+
+    if (elements.userPoolShare) {
+      elements.userPoolShare.textContent = `${userPoolSharePercentage.toFixed(
+        2
+      )}%`;
+    }
+
+    if (elements.poolRatio) {
+      elements.poolRatio.textContent = poolRatioText;
+    }
+
+    console.log("Pool statistics updated successfully");
+  } catch (error) {
+    console.error("Error updating pool statistics:", error);
+  }
+}
+
 // ===== EVENT HANDLERS =====
 function setupEvents() {
   console.log("Setting up event listeners...");
@@ -1138,7 +1245,7 @@ function setupEvents() {
 
   // Price update events
   if (elements.updatePricesBtn) {
-    elements.updatePricesBtn.addEventListener("click", updatePrices);
+    elements.updatePricesBtn.addEventListener("click", updateAllData);
   }
 
   // Liquidity events
@@ -1156,6 +1263,11 @@ function setupEvents() {
       "input",
       calculateRemoveLiquidityPreview
     );
+  }
+
+  // Pool statistics events
+  if (elements.refreshStatsBtn) {
+    elements.refreshStatsBtn.addEventListener("click", updatePoolStatistics);
   }
 
   // MetaMask events
@@ -1199,5 +1311,5 @@ document.addEventListener("DOMContentLoaded", initialize);
 
 // Expose global functions for HTML usage
 window.swapTokenAddress = swapAddress;
-window.updatePricesAndReserves = updatePrices;
+window.updatePricesAndReserves = updateAllData;
 window.closeNotification = closeNotification;

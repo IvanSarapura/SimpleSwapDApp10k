@@ -101,6 +101,32 @@
                 <i class="fas fa-plus-circle"></i> Add Liquidity
               </button>
             </div>
+
+            <!-- Pool Statistics Card -->
+            <div class="card">
+              <h3>Pool Statistics</h3>
+              <div class="stats-info">
+                <div class="stat-item">
+                  <span>Total Value Locked:</span>
+                  <span id="poolTVL">$0.00</span>
+                </div>
+                <div class="stat-item">
+                  <span>Total LP Tokens:</span>
+                  <span id="totalLPTokens">0</span>
+                </div>
+                <div class="stat-item">
+                  <span>Your Pool Share:</span>
+                  <span id="userPoolShare">0%</span>
+                </div>
+                <div class="stat-item">
+                  <span>Pool Ratio:</span>
+                  <span id="poolRatio">1:1</span>
+                </div>
+              </div>
+              <button id="refreshStatsBtn" class="btn btn-secondary full-width">
+                <i class="fas fa-sync-alt"></i> Refresh Stats
+              </button>
+            </div>
           </div>
 
           <!-- Central swap interface - main functionality -->
