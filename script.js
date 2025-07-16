@@ -687,24 +687,42 @@ async function updatePrices() {
 
     // Calculate and display exchange rates
     if (!reserveA.isZero() && !reserveB.isZero()) {
-      const priceA =
+      // THEORETICAL PRICE: Based only on reserves (x/y ratio)
+      // Good for general pool rate display
+      const theoreticalPriceA =
         parseFloat(ethers.utils.formatEther(reserveB)) /
         parseFloat(ethers.utils.formatEther(reserveA));
-      const priceB =
+      const theoreticalPriceB =
         parseFloat(ethers.utils.formatEther(reserveA)) /
         parseFloat(ethers.utils.formatEther(reserveB));
 
-      if (elements.priceTokenA)
-        elements.priceTokenA.textContent = priceA.toFixed(6);
-      if (elements.priceTokenB)
-        elements.priceTokenB.textContent = priceB.toFixed(6);
+      // REAL PRICE: Using getAmountOut() with 1 token
+      // More accurate as it considers trade impact
+      const realPrices = await calculateRealPrices(reserveA, reserveB);
 
-      // Update current price display in navigation
+      // Update price displays (using real prices for better accuracy)
+      if (elements.priceTokenA) {
+        elements.priceTokenA.textContent = realPrices.priceA.toFixed(6);
+      }
+      if (elements.priceTokenB) {
+        elements.priceTokenB.textContent = realPrices.priceB.toFixed(6);
+      }
+
+      // Update current price display in navigation (using real price)
       if (elements.currentPrice) {
-        elements.currentPrice.textContent = `1 Token A = ${priceA.toFixed(
+        elements.currentPrice.textContent = `1 Token A = ${realPrices.priceA.toFixed(
           6
         )} Token B`;
       }
+
+      // Log both prices for comparison (development purposes)
+      console.log(`Theoretical Price A: ${theoreticalPriceA.toFixed(6)}`);
+      console.log(`Real Price A: ${realPrices.priceA.toFixed(6)}`);
+      console.log(
+        `Difference: ${Math.abs(theoreticalPriceA - realPrices.priceA).toFixed(
+          6
+        )}`
+      );
     } else {
       // Handle case when no liquidity exists
       if (elements.priceTokenA) elements.priceTokenA.textContent = "-";
@@ -716,6 +734,51 @@ async function updatePrices() {
     console.log("Prices updated successfully");
   } catch (error) {
     console.error("Error updating prices:", error);
+  }
+}
+
+// ===== REAL PRICE CALCULATION FUNCTION =====
+async function calculateRealPrices(reserveA, reserveB) {
+  try {
+    // Use 1 token as standard amount for price calculation
+    const oneToken = ethers.utils.parseEther("1");
+
+    // Calculate real price A to B using getAmountOut()
+    // This considers the actual trade impact (slippage)
+    const realAmountOutB = await contracts.simpleSwap.getAmountOut(
+      oneToken,
+      reserveA,
+      reserveB
+    );
+
+    // Calculate real price B to A using getAmountOut()
+    const realAmountOutA = await contracts.simpleSwap.getAmountOut(
+      oneToken,
+      reserveB,
+      reserveA
+    );
+
+    const realPriceA = parseFloat(ethers.utils.formatEther(realAmountOutB));
+    const realPriceB = parseFloat(ethers.utils.formatEther(realAmountOutA));
+
+    return {
+      priceA: realPriceA,
+      priceB: realPriceB,
+    };
+  } catch (error) {
+    console.error("Error calculating real prices:", error);
+    // Fallback to theoretical prices if getAmountOut fails
+    const theoreticalPriceA =
+      parseFloat(ethers.utils.formatEther(reserveB)) /
+      parseFloat(ethers.utils.formatEther(reserveA));
+    const theoreticalPriceB =
+      parseFloat(ethers.utils.formatEther(reserveA)) /
+      parseFloat(ethers.utils.formatEther(reserveB));
+
+    return {
+      priceA: theoreticalPriceA,
+      priceB: theoreticalPriceB,
+    };
   }
 }
 
