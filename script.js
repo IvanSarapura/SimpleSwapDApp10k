@@ -933,7 +933,7 @@ async function autofillLiquidityFields(changedField) {
       const optimalAmountB = amountA.mul(reserveB).div(reserveA);
       const optimalBFormatted = parseFloat(
         ethers.utils.formatEther(optimalAmountB)
-      ).toFixed(6);
+      ).toFixed(2);
       if (elements.liquidityAmountB)
         elements.liquidityAmountB.value = optimalBFormatted;
     } else if (changedField === "B" && inputB && parseFloat(inputB) > 0) {
@@ -942,7 +942,7 @@ async function autofillLiquidityFields(changedField) {
       const optimalAmountA = amountB.mul(reserveA).div(reserveB);
       const optimalAFormatted = parseFloat(
         ethers.utils.formatEther(optimalAmountA)
-      ).toFixed(6);
+      ).toFixed(2);
       if (elements.liquidityAmountA)
         elements.liquidityAmountA.value = optimalAFormatted;
     }
@@ -1036,9 +1036,9 @@ async function addLiquidity() {
       showNotification(
         `Amounts adjusted to pool ratio: ${parseFloat(
           ethers.utils.formatEther(finalAmountA)
-        ).toFixed(6)} TACC + ${parseFloat(
+        ).toFixed(2)} TACC + ${parseFloat(
           ethers.utils.formatEther(finalAmountB)
-        ).toFixed(6)} TBCC`,
+        ).toFixed(2)} TBCC`,
         "info"
       );
     }
