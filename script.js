@@ -416,25 +416,25 @@ async function updateBalances() {
     if (elements.balanceTokenA) {
       elements.balanceTokenA.textContent = parseFloat(
         ethers.utils.formatEther(balanceA)
-      ).toFixed(4);
+      ).toFixed(6);
     }
 
     if (elements.balanceTokenB) {
       elements.balanceTokenB.textContent = parseFloat(
         ethers.utils.formatEther(balanceB)
-      ).toFixed(4);
+      ).toFixed(6);
     }
 
     if (elements.lpTokenBalance) {
       elements.lpTokenBalance.textContent = parseFloat(
         ethers.utils.formatEther(lpBalance)
-      ).toFixed(4);
+      ).toFixed(6);
     }
 
     if (elements.lpTokenBalanceAccount) {
       elements.lpTokenBalanceAccount.textContent = parseFloat(
         ethers.utils.formatEther(lpBalance)
-      ).toFixed(4);
+      ).toFixed(6);
     }
 
     console.log("Balances updated successfully");
@@ -676,13 +676,13 @@ async function updatePrices() {
     if (elements.reserveTokenA) {
       elements.reserveTokenA.textContent = parseFloat(
         ethers.utils.formatEther(reserveA)
-      ).toFixed(4);
+      ).toFixed(6);
     }
 
     if (elements.reserveTokenB) {
       elements.reserveTokenB.textContent = parseFloat(
         ethers.utils.formatEther(reserveB)
-      ).toFixed(4);
+      ).toFixed(6);
     }
 
     // Calculate and display exchange rates
@@ -1047,9 +1047,9 @@ async function addLiquidity() {
       showNotification(
         `Amounts adjusted to pool ratio: ${parseFloat(
           ethers.utils.formatEther(finalAmountA)
-        ).toFixed(4)} TACC + ${parseFloat(
+        ).toFixed(6)} TACC + ${parseFloat(
           ethers.utils.formatEther(finalAmountB)
-        ).toFixed(4)} TBCC`,
+        ).toFixed(6)} TBCC`,
         "info"
       );
     }
