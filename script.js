@@ -434,7 +434,7 @@ async function updateBalances() {
     if (elements.lpTokenBalanceAccount) {
       elements.lpTokenBalanceAccount.textContent = parseFloat(
         ethers.utils.formatEther(lpBalance)
-      ).toFixed(6);
+      ).toFixed(16);
     }
 
     console.log("Balances updated successfully");
