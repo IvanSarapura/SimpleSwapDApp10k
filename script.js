@@ -920,92 +920,47 @@ async function approveAllTokens() {
 }
 
 // ===== LIQUIDITY HELPER FUNCTIONS =====
-async function displayPoolInfo() {
-  if (!contracts.simpleSwap) return;
+let isAutoFillingLiquidity = false; // Bandera para evitar bucles infinitos
 
+async function autofillLiquidityFields(changedField) {
+  if (isAutoFillingLiquidity) return;
+  isAutoFillingLiquidity = true;
   try {
-    // Get current reserves
+    if (!contracts.simpleSwap) return;
+    const inputA = elements.liquidityAmountA?.value;
+    const inputB = elements.liquidityAmountB?.value;
     const [reserveA, reserveB] = await contracts.simpleSwap.getReserves(
       CONTRACT_ADDRESSES.TOKEN_A,
       CONTRACT_ADDRESSES.TOKEN_B
     );
-
+    // Si el pool está vacío, no autocompletar
     if (reserveA.isZero() || reserveB.isZero()) {
-      console.log("Pool is empty - you can add any ratio of tokens");
+      isAutoFillingLiquidity = false;
       return;
     }
-
-    // Calculate current pool ratio
-    const ratioAtoB =
-      parseFloat(ethers.utils.formatEther(reserveA)) /
-      parseFloat(ethers.utils.formatEther(reserveB));
-    const ratioBtoA =
-      parseFloat(ethers.utils.formatEther(reserveB)) /
-      parseFloat(ethers.utils.formatEther(reserveA));
-
-    console.log(`Current Pool Ratio: 1 TACC = ${ratioBtoA.toFixed(6)} TBCC`);
-    console.log(`Current Pool Ratio: 1 TBCC = ${ratioAtoB.toFixed(6)} TACC`);
-    console.log(
-      `Pool Reserves: ${ethers.utils.formatEther(
-        reserveA
-      )} TACC, ${ethers.utils.formatEther(reserveB)} TBCC`
-    );
-
-    return {
-      reserveA: ethers.utils.formatEther(reserveA),
-      reserveB: ethers.utils.formatEther(reserveB),
-      ratioAtoB: ratioAtoB,
-      ratioBtoA: ratioBtoA,
-    };
-  } catch (error) {
-    console.error("Error getting pool info:", error);
-  }
-}
-
-async function suggestOptimalAmounts(inputAmountA, inputAmountB) {
-  if (!contracts.simpleSwap) return;
-
-  try {
-    const [reserveA, reserveB] = await contracts.simpleSwap.getReserves(
-      CONTRACT_ADDRESSES.TOKEN_A,
-      CONTRACT_ADDRESSES.TOKEN_B
-    );
-
-    if (reserveA.isZero() || reserveB.isZero()) {
-      return {
-        suggestion: "Pool is empty - you can add any ratio",
-        optimalA: inputAmountA,
-        optimalB: inputAmountB,
-      };
+    if (changedField === "A" && inputA && parseFloat(inputA) > 0) {
+      // Calcular B óptimo para el valor de A
+      const amountA = ethers.utils.parseEther(inputA.toString());
+      const optimalAmountB = amountA.mul(reserveB).div(reserveA);
+      const optimalBFormatted = parseFloat(
+        ethers.utils.formatEther(optimalAmountB)
+      ).toFixed(6);
+      if (elements.liquidityAmountB)
+        elements.liquidityAmountB.value = optimalBFormatted;
+    } else if (changedField === "B" && inputB && parseFloat(inputB) > 0) {
+      // Calcular A óptimo para el valor de B
+      const amountB = ethers.utils.parseEther(inputB.toString());
+      const optimalAmountA = amountB.mul(reserveA).div(reserveB);
+      const optimalAFormatted = parseFloat(
+        ethers.utils.formatEther(optimalAmountA)
+      ).toFixed(6);
+      if (elements.liquidityAmountA)
+        elements.liquidityAmountA.value = optimalAFormatted;
     }
-
-    const amountA = ethers.utils.parseEther(inputAmountA.toString());
-    const amountB = ethers.utils.parseEther(inputAmountB.toString());
-
-    // Calculate optimal amounts
-    const optimalAmountB = amountA.mul(reserveB).div(reserveA);
-    const optimalAmountA = amountB.mul(reserveA).div(reserveB);
-
-    const optimalBFormatted = parseFloat(
-      ethers.utils.formatEther(optimalAmountB)
-    );
-    const optimalAFormatted = parseFloat(
-      ethers.utils.formatEther(optimalAmountA)
-    );
-
-    return {
-      suggestion: `For ${inputAmountA} TACC, you need ${optimalBFormatted.toFixed(
-        6
-      )} TBCC`,
-      alternativeSuggestion: `For ${inputAmountB} TBCC, you need ${optimalAFormatted.toFixed(
-        6
-      )} TACC`,
-      optimalA: optimalAFormatted,
-      optimalB: optimalBFormatted,
-    };
   } catch (error) {
-    console.error("Error calculating optimal amounts:", error);
-    return null;
+    console.error("Error autocompletando campos de liquidez:", error);
+  } finally {
+    isAutoFillingLiquidity = false;
   }
 }
 
@@ -1409,6 +1364,18 @@ function setupEvents() {
   // Liquidity events
   if (elements.addLiquidityBtn) {
     elements.addLiquidityBtn.addEventListener("click", addLiquidity);
+  }
+
+  // === NUEVO: Autocompletado de campos de liquidez ===
+  if (elements.liquidityAmountA) {
+    elements.liquidityAmountA.addEventListener("input", async () => {
+      await autofillLiquidityFields("A");
+    });
+  }
+  if (elements.liquidityAmountB) {
+    elements.liquidityAmountB.addEventListener("input", async () => {
+      await autofillLiquidityFields("B");
+    });
   }
 
   // Remove liquidity events
