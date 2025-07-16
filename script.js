@@ -500,15 +500,17 @@ async function calculateSwap() {
     );
     const formattedAmount = parseFloat(
       ethers.utils.formatEther(amountOut)
-    ).toLocaleString("en-US", {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    });
+    ).toFixed(2);
 
     // Update UI with calculated amounts
     if (elements.amountTo) elements.amountTo.value = formattedAmount;
     if (elements.receiveAmount)
-      elements.receiveAmount.textContent = formattedAmount;
+      elements.receiveAmount.textContent = parseFloat(
+        ethers.utils.formatEther(amountOut)
+      ).toLocaleString("en-US", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      });
 
     // Calculate and display exchange rate
     const price = (
@@ -974,10 +976,7 @@ async function autofillLiquidityFields(changedField) {
       const optimalAmountB = amountA.mul(reserveB).div(reserveA);
       const optimalBFormatted = parseFloat(
         ethers.utils.formatEther(optimalAmountB)
-      ).toLocaleString("en-US", {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      });
+      ).toFixed(2);
       if (elements.liquidityAmountB)
         elements.liquidityAmountB.value = optimalBFormatted;
     } else if (changedField === "B" && inputB && parseFloat(inputB) > 0) {
@@ -986,10 +985,7 @@ async function autofillLiquidityFields(changedField) {
       const optimalAmountA = amountB.mul(reserveA).div(reserveB);
       const optimalAFormatted = parseFloat(
         ethers.utils.formatEther(optimalAmountA)
-      ).toLocaleString("en-US", {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      });
+      ).toFixed(2);
       if (elements.liquidityAmountA)
         elements.liquidityAmountA.value = optimalAFormatted;
     }
