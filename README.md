@@ -55,34 +55,34 @@ SimpleSwap is a decentralized exchange (DEX) implementation built on Ethereum th
 
 ### 2. Get Test Tokens
 
-- Click "Mint 1000 Token A" or "Mint 1000 Token B"
+- Click "Mint 1000 Token A"
+- Confirm the transaction in MetaMask
+- "Mint 1000 Token B"
 - Confirm the transaction in MetaMask
 - Your balance will update automatically
 
 ### 3. Approve Tokens
 
-- Click "Approve All Tokens" to enable swapping
+- Click "Approve All Tokens" to enable add liquidity and swapping
 - This allows the DEX to spend your tokens
 
-### 4. Swap Tokens
+### 4. Add Liquidity
+
+- Enter amounts for both Token A and Token B
+- Click "Add Liquidity" to receive LP tokens
+
+### 5. Swap Tokens
 
 - Enter the amount you want to swap
 - Select source and destination tokens
 - Review the exchange rate and expected output
 - Click "Execute Swap" and confirm transaction
 
-### 5. Add Liquidity
-
-- Enter amounts for both Token A and Token B
-- The system will optimize amounts to maintain pool ratio
-- Click "Add Liquidity" to receive LP tokens
-- Earn fees from future swaps proportional to your share
-
 ### 6. Remove Liquidity
 
 - Enter the amount of LP tokens to remove
 - Preview shows the tokens you'll receive
-- Click "Remove Liquidity" to get back your tokens plus earned fees
+- Click "Remove Liquidity" to get back your tokens
 
 ---
 
