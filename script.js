@@ -416,13 +416,13 @@ async function updateBalances() {
     if (elements.balanceTokenA) {
       elements.balanceTokenA.textContent = parseFloat(
         ethers.utils.formatEther(balanceA)
-      ).toFixed(6);
+      ).toFixed(2);
     }
 
     if (elements.balanceTokenB) {
       elements.balanceTokenB.textContent = parseFloat(
         ethers.utils.formatEther(balanceB)
-      ).toFixed(6);
+      ).toFixed(2);
     }
 
     if (elements.lpTokenBalance) {
@@ -434,7 +434,7 @@ async function updateBalances() {
     if (elements.lpTokenBalanceAccount) {
       elements.lpTokenBalanceAccount.textContent = parseFloat(
         ethers.utils.formatEther(lpBalance)
-      ).toFixed(6);
+      ).toFixed(2);
     }
 
     console.log("Balances updated successfully");
@@ -713,22 +713,6 @@ async function updatePrices() {
           6
         )} Token B`;
       }
-
-      // Log both prices for comparison (development purposes)
-      console.log(`Theoretical Price A: ${theoreticalPriceA.toFixed(6)}`);
-      console.log(`Real Price A: ${realPrices.priceA.toFixed(6)}`);
-      console.log(
-        `Difference: ${Math.abs(theoreticalPriceA - realPrices.priceA).toFixed(
-          6
-        )}`
-      );
-      console.log(`Theoretical Price B: ${theoreticalPriceB.toFixed(6)}`);
-      console.log(`Real Price B: ${realPrices.priceB.toFixed(6)}`);
-      console.log(
-        `Difference: ${Math.abs(theoreticalPriceB - realPrices.priceB).toFixed(
-          6
-        )}`
-      );
     } else {
       // Handle case when no liquidity exists
       if (elements.priceTokenA) elements.priceTokenA.textContent = "-";
@@ -1428,10 +1412,6 @@ document.addEventListener("DOMContentLoaded", initialize);
 
 // Expose global functions for HTML usage
 window.swapTokenAddress = swapAddress;
-window.updatePricesAndReserves = updatePrices;
 window.closeNotification = closeNotification;
 
-// Expose helper functions for debugging and user assistance
-window.displayPoolInfo = displayPoolInfo;
-window.suggestOptimalAmounts = suggestOptimalAmounts;
 window.calculateRealPrices = calculateRealPrices;
