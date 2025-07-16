@@ -416,25 +416,38 @@ async function updateBalances() {
     if (elements.balanceTokenA) {
       elements.balanceTokenA.textContent = parseFloat(
         ethers.utils.formatEther(balanceA)
-      ).toFixed(2);
+      ).toLocaleString("en-US", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      });
     }
 
     if (elements.balanceTokenB) {
       elements.balanceTokenB.textContent = parseFloat(
         ethers.utils.formatEther(balanceB)
-      ).toFixed(2);
+      ).toLocaleString("en-US", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      });
     }
 
     if (elements.lpTokenBalance) {
       elements.lpTokenBalance.textContent = parseFloat(
         ethers.utils.formatEther(lpBalance)
-      ).toFixed(16);
+      ).toLocaleString("en-US", {
+        // .toFixed(16); LP Token Balance in Remove Liquidity
+        minimumFractionDigits: 6,
+        maximumFractionDigits: 6,
+      });
     }
 
     if (elements.lpTokenBalanceAccount) {
       elements.lpTokenBalanceAccount.textContent = parseFloat(
         ethers.utils.formatEther(lpBalance)
-      ).toFixed(2);
+      ).toLocaleString("en-US", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      });
     }
 
     console.log("Balances updated successfully");
@@ -487,7 +500,10 @@ async function calculateSwap() {
     );
     const formattedAmount = parseFloat(
       ethers.utils.formatEther(amountOut)
-    ).toFixed(2);
+    ).toLocaleString("en-US", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
 
     // Update UI with calculated amounts
     if (elements.amountTo) elements.amountTo.value = formattedAmount;
@@ -498,7 +514,10 @@ async function calculateSwap() {
     const price = (
       parseFloat(ethers.utils.formatEther(amountOut)) /
       parseFloat(elements.amountFrom.value)
-    ).toFixed(2);
+    ).toLocaleString("en-US", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
     if (elements.swapPrice) {
       elements.swapPrice.textContent = `1 ${
         elements.tokenFrom.value === "tokenA" ? "TACC" : "TBCC"
@@ -676,13 +695,19 @@ async function updatePrices() {
     if (elements.reserveTokenA) {
       elements.reserveTokenA.textContent = parseFloat(
         ethers.utils.formatEther(reserveA)
-      ).toFixed(2);
+      ).toLocaleString("en-US", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      });
     }
 
     if (elements.reserveTokenB) {
       elements.reserveTokenB.textContent = parseFloat(
         ethers.utils.formatEther(reserveB)
-      ).toFixed(2);
+      ).toLocaleString("en-US", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      });
     }
 
     // Calculate and display exchange rates
@@ -701,16 +726,32 @@ async function updatePrices() {
 
       // Update price displays (using real prices for better accuracy)
       if (elements.priceTokenA) {
-        elements.priceTokenA.textContent = realPrices.priceA.toFixed(2);
+        elements.priceTokenA.textContent = realPrices.priceA.toLocaleString(
+          "en-US",
+          {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          }
+        );
       }
       if (elements.priceTokenB) {
-        elements.priceTokenB.textContent = realPrices.priceB.toFixed(2);
+        elements.priceTokenB.textContent = realPrices.priceB.toLocaleString(
+          "en-US",
+          {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          }
+        );
       }
 
       // Update current price display in navigation (using real price)
       if (elements.currentPrice) {
-        elements.currentPrice.textContent = `1 Token A = ${realPrices.priceA.toFixed(
-          2
+        elements.currentPrice.textContent = `1 Token A = ${realPrices.priceA.toLocaleString(
+          "en-US",
+          {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          }
         )} Token B`;
       }
     } else {
@@ -933,7 +974,10 @@ async function autofillLiquidityFields(changedField) {
       const optimalAmountB = amountA.mul(reserveB).div(reserveA);
       const optimalBFormatted = parseFloat(
         ethers.utils.formatEther(optimalAmountB)
-      ).toFixed(2);
+      ).toLocaleString("en-US", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      });
       if (elements.liquidityAmountB)
         elements.liquidityAmountB.value = optimalBFormatted;
     } else if (changedField === "B" && inputB && parseFloat(inputB) > 0) {
@@ -942,7 +986,10 @@ async function autofillLiquidityFields(changedField) {
       const optimalAmountA = amountB.mul(reserveA).div(reserveB);
       const optimalAFormatted = parseFloat(
         ethers.utils.formatEther(optimalAmountA)
-      ).toFixed(2);
+      ).toLocaleString("en-US", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      });
       if (elements.liquidityAmountA)
         elements.liquidityAmountA.value = optimalAFormatted;
     }
@@ -1036,9 +1083,15 @@ async function addLiquidity() {
       showNotification(
         `Amounts adjusted to pool ratio: ${parseFloat(
           ethers.utils.formatEther(finalAmountA)
-        ).toFixed(2)} TACC + ${parseFloat(
+        ).toLocaleString("en-US", {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        })} TACC + ${parseFloat(
           ethers.utils.formatEther(finalAmountB)
-        ).toFixed(2)} TBCC`,
+        ).toLocaleString("en-US", {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        })} TBCC`,
         "info"
       );
     }
@@ -1265,13 +1318,19 @@ async function calculateRemoveLiquidityPreview() {
     if (elements.previewAmountA) {
       elements.previewAmountA.textContent = parseFloat(
         ethers.utils.formatEther(expectedAmountA)
-      ).toFixed(2);
+      ).toLocaleString("en-US", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      });
     }
 
     if (elements.previewAmountB) {
       elements.previewAmountB.textContent = parseFloat(
         ethers.utils.formatEther(expectedAmountB)
-      ).toFixed(2);
+      ).toLocaleString("en-US", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      });
     }
   } catch (error) {
     console.error("Error calculating remove liquidity preview:", error);
