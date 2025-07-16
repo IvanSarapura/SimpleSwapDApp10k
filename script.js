@@ -919,6 +919,96 @@ async function approveAllTokens() {
   }
 }
 
+// ===== LIQUIDITY HELPER FUNCTIONS =====
+async function displayPoolInfo() {
+  if (!contracts.simpleSwap) return;
+
+  try {
+    // Get current reserves
+    const [reserveA, reserveB] = await contracts.simpleSwap.getReserves(
+      CONTRACT_ADDRESSES.TOKEN_A,
+      CONTRACT_ADDRESSES.TOKEN_B
+    );
+
+    if (reserveA.isZero() || reserveB.isZero()) {
+      console.log("Pool is empty - you can add any ratio of tokens");
+      return;
+    }
+
+    // Calculate current pool ratio
+    const ratioAtoB =
+      parseFloat(ethers.utils.formatEther(reserveA)) /
+      parseFloat(ethers.utils.formatEther(reserveB));
+    const ratioBtoA =
+      parseFloat(ethers.utils.formatEther(reserveB)) /
+      parseFloat(ethers.utils.formatEther(reserveA));
+
+    console.log(`Current Pool Ratio: 1 TACC = ${ratioBtoA.toFixed(6)} TBCC`);
+    console.log(`Current Pool Ratio: 1 TBCC = ${ratioAtoB.toFixed(6)} TACC`);
+    console.log(
+      `Pool Reserves: ${ethers.utils.formatEther(
+        reserveA
+      )} TACC, ${ethers.utils.formatEther(reserveB)} TBCC`
+    );
+
+    return {
+      reserveA: ethers.utils.formatEther(reserveA),
+      reserveB: ethers.utils.formatEther(reserveB),
+      ratioAtoB: ratioAtoB,
+      ratioBtoA: ratioBtoA,
+    };
+  } catch (error) {
+    console.error("Error getting pool info:", error);
+  }
+}
+
+async function suggestOptimalAmounts(inputAmountA, inputAmountB) {
+  if (!contracts.simpleSwap) return;
+
+  try {
+    const [reserveA, reserveB] = await contracts.simpleSwap.getReserves(
+      CONTRACT_ADDRESSES.TOKEN_A,
+      CONTRACT_ADDRESSES.TOKEN_B
+    );
+
+    if (reserveA.isZero() || reserveB.isZero()) {
+      return {
+        suggestion: "Pool is empty - you can add any ratio",
+        optimalA: inputAmountA,
+        optimalB: inputAmountB,
+      };
+    }
+
+    const amountA = ethers.utils.parseEther(inputAmountA.toString());
+    const amountB = ethers.utils.parseEther(inputAmountB.toString());
+
+    // Calculate optimal amounts
+    const optimalAmountB = amountA.mul(reserveB).div(reserveA);
+    const optimalAmountA = amountB.mul(reserveA).div(reserveB);
+
+    const optimalBFormatted = parseFloat(
+      ethers.utils.formatEther(optimalAmountB)
+    );
+    const optimalAFormatted = parseFloat(
+      ethers.utils.formatEther(optimalAmountA)
+    );
+
+    return {
+      suggestion: `For ${inputAmountA} TACC, you need ${optimalBFormatted.toFixed(
+        6
+      )} TBCC`,
+      alternativeSuggestion: `For ${inputAmountB} TBCC, you need ${optimalAFormatted.toFixed(
+        6
+      )} TACC`,
+      optimalA: optimalAFormatted,
+      optimalB: optimalBFormatted,
+    };
+  } catch (error) {
+    console.error("Error calculating optimal amounts:", error);
+    return null;
+  }
+}
+
 // ===== LIQUIDITY FUNCTIONS =====
 async function addLiquidity() {
   if (!userAddress || !contracts.simpleSwap) {
@@ -956,19 +1046,114 @@ async function addLiquidity() {
     const amountADesired = ethers.utils.parseEther(amountA);
     const amountBDesired = ethers.utils.parseEther(amountB);
 
+    // Get current reserves to calculate optimal amounts
+    const [reserveA, reserveB] = await contracts.simpleSwap.getReserves(
+      CONTRACT_ADDRESSES.TOKEN_A,
+      CONTRACT_ADDRESSES.TOKEN_B
+    );
+
+    let finalAmountA = amountADesired;
+    let finalAmountB = amountBDesired;
+
+    // If liquidity already exists, calculate optimal amounts
+    if (!reserveA.isZero() && !reserveB.isZero()) {
+      console.log(
+        "Existing liquidity detected, calculating optimal amounts..."
+      );
+
+      // Calculate optimal amount B for given amount A
+      const optimalAmountB = amountADesired.mul(reserveB).div(reserveA);
+
+      // Calculate optimal amount A for given amount B
+      const optimalAmountA = amountBDesired.mul(reserveA).div(reserveB);
+
+      // Choose the pair that uses the maximum amount of tokens without exceeding desired amounts
+      if (optimalAmountB.lte(amountBDesired)) {
+        // Use amountA as base, adjust amountB
+        finalAmountA = amountADesired;
+        finalAmountB = optimalAmountB;
+        console.log(
+          `Adjusted: A=${ethers.utils.formatEther(
+            finalAmountA
+          )}, B=${ethers.utils.formatEther(finalAmountB)}`
+        );
+      } else {
+        // Use amountB as base, adjust amountA
+        finalAmountA = optimalAmountA;
+        finalAmountB = amountBDesired;
+        console.log(
+          `Adjusted: A=${ethers.utils.formatEther(
+            finalAmountA
+          )}, B=${ethers.utils.formatEther(finalAmountB)}`
+        );
+      }
+
+      // Notify user about the adjustment
+      showNotification(
+        `Amounts adjusted to pool ratio: ${parseFloat(
+          ethers.utils.formatEther(finalAmountA)
+        ).toFixed(4)} TACC + ${parseFloat(
+          ethers.utils.formatEther(finalAmountB)
+        ).toFixed(4)} TBCC`,
+        "info"
+      );
+    }
+
     // Set slippage tolerance (5%)
-    const amountAMin = amountADesired.mul(95).div(100);
-    const amountBMin = amountBDesired.mul(95).div(100);
+    const amountAMin = finalAmountA.mul(95).div(100);
+    const amountBMin = finalAmountB.mul(95).div(100);
 
     // Set deadline (10 minutes from now)
     const deadline = Math.floor(Date.now() / 1000) + 600;
+
+    // Check token balances
+    const balanceA = await contracts.tokenA.balanceOf(userAddress);
+    const balanceB = await contracts.tokenB.balanceOf(userAddress);
+
+    if (balanceA.lt(finalAmountA)) {
+      throw new Error(
+        `Insufficient Token A balance. Need: ${ethers.utils.formatEther(
+          finalAmountA
+        )}, Have: ${ethers.utils.formatEther(balanceA)}`
+      );
+    }
+
+    if (balanceB.lt(finalAmountB)) {
+      throw new Error(
+        `Insufficient Token B balance. Need: ${ethers.utils.formatEther(
+          finalAmountB
+        )}, Have: ${ethers.utils.formatEther(balanceB)}`
+      );
+    }
+
+    // Check token approvals
+    const allowanceA = await contracts.tokenA.allowance(
+      userAddress,
+      CONTRACT_ADDRESSES.SIMPLE_SWAP
+    );
+    const allowanceB = await contracts.tokenB.allowance(
+      userAddress,
+      CONTRACT_ADDRESSES.SIMPLE_SWAP
+    );
+
+    if (allowanceA.lt(finalAmountA)) {
+      throw new Error(
+        "Insufficient Token A allowance. Please approve tokens first."
+      );
+    }
+
+    if (allowanceB.lt(finalAmountB)) {
+      throw new Error(
+        "Insufficient Token B allowance. Please approve tokens first."
+      );
+    }
 
     // Execute add liquidity transaction
     const tx = await contracts.simpleSwap.addLiquidity(
       CONTRACT_ADDRESSES.TOKEN_A,
       CONTRACT_ADDRESSES.TOKEN_B,
-      amountADesired,
-      amountBDesired,
+      finalAmountA,
+      finalAmountB,
       amountAMin,
       amountBMin,
       userAddress,
@@ -988,7 +1173,24 @@ async function addLiquidity() {
     await updatePrices();
   } catch (error) {
     console.error("Error adding liquidity:", error);
-    showNotification(`Error adding liquidity: ${error.message}`, "error");
+
+    // Provide user-friendly error messages
+    let errorMessage = error.message;
+
+    if (error.message.includes("Low amountA")) {
+      errorMessage =
+        "The amount of Token A is too low after adjusting for the current pool ratio. Try increasing Token A amount or use different proportions.";
+    } else if (error.message.includes("Low amountB")) {
+      errorMessage =
+        "The amount of Token B is too low after adjusting for the current pool ratio. Try increasing Token B amount or use different proportions.";
+    } else if (error.message.includes("Insufficient")) {
+      errorMessage = error.message; // Already user-friendly
+    } else if (error.message.includes("allowance")) {
+      errorMessage =
+        "Please approve tokens first by clicking 'Approve All Tokens'.";
+    }
+
+    showNotification(`Error adding liquidity: ${errorMessage}`, "error");
   } finally {
     hideLoading();
     if (elements.addLiquidityBtn) {
@@ -1264,3 +1466,8 @@ document.addEventListener("DOMContentLoaded", initialize);
 window.swapTokenAddress = swapAddress;
 window.updatePricesAndReserves = updatePrices;
 window.closeNotification = closeNotification;
+
+// Expose helper functions for debugging and user assistance
+window.displayPoolInfo = displayPoolInfo;
+window.suggestOptimalAmounts = suggestOptimalAmounts;
+window.calculateRealPrices = calculateRealPrices;
