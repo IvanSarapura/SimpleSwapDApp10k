@@ -688,7 +688,7 @@ async function updatePrices() {
     // Calculate and display exchange rates
     if (!reserveA.isZero() && !reserveB.isZero()) {
       // THEORETICAL PRICE: Based only on reserves (x/y ratio)
-      // Good for general pool rate display
+      // For general pool rate display
       const theoreticalPriceA =
         parseFloat(ethers.utils.formatEther(reserveB)) /
         parseFloat(ethers.utils.formatEther(reserveA));
@@ -697,7 +697,6 @@ async function updatePrices() {
         parseFloat(ethers.utils.formatEther(reserveB));
 
       // REAL PRICE: Using getAmountOut() with 1 token
-      // More accurate as it considers trade impact
       const realPrices = await calculateRealPrices(reserveA, reserveB);
 
       // Update price displays (using real prices for better accuracy)
@@ -723,6 +722,13 @@ async function updatePrices() {
           6
         )}`
       );
+      console.log(`Theoretical Price B: ${theoreticalPriceB.toFixed(6)}`);
+      console.log(`Real Price B: ${realPrices.priceB.toFixed(6)}`);
+      console.log(
+        `Difference: ${Math.abs(theoreticalPriceB - realPrices.priceB).toFixed(
+          6
+        )}`
+      );
     } else {
       // Handle case when no liquidity exists
       if (elements.priceTokenA) elements.priceTokenA.textContent = "-";
@@ -744,7 +750,6 @@ async function calculateRealPrices(reserveA, reserveB) {
     const oneToken = ethers.utils.parseEther("1");
 
     // Calculate real price A to B using getAmountOut()
-    // This considers the actual trade impact (slippage)
     const realAmountOutB = await contracts.simpleSwap.getAmountOut(
       oneToken,
       reserveA,
@@ -1132,15 +1137,7 @@ async function addLiquidity() {
     // Provide user-friendly error messages
     let errorMessage = error.message;
 
-    if (error.message.includes("Low amountA")) {
-      errorMessage =
-        "The amount of Token A is too low after adjusting for the current pool ratio. Try increasing Token A amount or use different proportions.";
-    } else if (error.message.includes("Low amountB")) {
-      errorMessage =
-        "The amount of Token B is too low after adjusting for the current pool ratio. Try increasing Token B amount or use different proportions.";
-    } else if (error.message.includes("Insufficient")) {
-      errorMessage = error.message; // Already user-friendly
-    } else if (error.message.includes("allowance")) {
+    if (error.message.includes("allowance")) {
       errorMessage =
         "Please approve tokens first by clicking 'Approve All Tokens'.";
     }
