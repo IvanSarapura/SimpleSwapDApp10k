@@ -487,7 +487,7 @@ async function calculateSwap() {
     );
     const formattedAmount = parseFloat(
       ethers.utils.formatEther(amountOut)
-    ).toFixed(6);
+    ).toFixed(2);
 
     // Update UI with calculated amounts
     if (elements.amountTo) elements.amountTo.value = formattedAmount;
@@ -498,7 +498,7 @@ async function calculateSwap() {
     const price = (
       parseFloat(ethers.utils.formatEther(amountOut)) /
       parseFloat(elements.amountFrom.value)
-    ).toFixed(6);
+    ).toFixed(2);
     if (elements.swapPrice) {
       elements.swapPrice.textContent = `1 ${
         elements.tokenFrom.value === "tokenA" ? "TACC" : "TBCC"
@@ -676,13 +676,13 @@ async function updatePrices() {
     if (elements.reserveTokenA) {
       elements.reserveTokenA.textContent = parseFloat(
         ethers.utils.formatEther(reserveA)
-      ).toFixed(6);
+      ).toFixed(2);
     }
 
     if (elements.reserveTokenB) {
       elements.reserveTokenB.textContent = parseFloat(
         ethers.utils.formatEther(reserveB)
-      ).toFixed(6);
+      ).toFixed(2);
     }
 
     // Calculate and display exchange rates
@@ -701,16 +701,16 @@ async function updatePrices() {
 
       // Update price displays (using real prices for better accuracy)
       if (elements.priceTokenA) {
-        elements.priceTokenA.textContent = realPrices.priceA.toFixed(6);
+        elements.priceTokenA.textContent = realPrices.priceA.toFixed(2);
       }
       if (elements.priceTokenB) {
-        elements.priceTokenB.textContent = realPrices.priceB.toFixed(6);
+        elements.priceTokenB.textContent = realPrices.priceB.toFixed(2);
       }
 
       // Update current price display in navigation (using real price)
       if (elements.currentPrice) {
         elements.currentPrice.textContent = `1 Token A = ${realPrices.priceA.toFixed(
-          6
+          2
         )} Token B`;
       }
     } else {
