@@ -436,8 +436,8 @@ async function updateBalances() {
         ethers.utils.formatEther(lpBalance)
       ).toLocaleString("en-US", {
         // .toFixed(16); LP Token Balance in Remove Liquidity
-        minimumFractionDigits: 6,
-        maximumFractionDigits: 6,
+        minimumFractionDigits: 16,
+        maximumFractionDigits: 16,
       });
     }
 
